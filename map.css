@@ -1,8 +1,14 @@
 :root {
     --primary:#148812;
+    --white:#fff;
 }
 
 body {
+    margin: 0;
+    padding: 0;
+}
+
+.container-fluid {
     margin: 0;
     padding: 0;
 }
@@ -11,6 +17,7 @@ body {
     width: 100%;
     height: 100vh;
     background-color: black;
+    z-index: 0;
 }
 
 /* origin destination filer */
@@ -18,9 +25,43 @@ body {
     position: absolute;
     top:4%;
     left: 3%;
-    height: 15px;
+    height: auto;
     width: 200px;
+    padding:0.5rem 0.25rem;
+    background-color: transparent;
+    z-index: 2;
+}
+
+.country-filter {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
     background-color: var(--white);
+    padding:0.5rem 0.25rem;
+    margin-bottom: 1em;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 0.7em;
+}
+
+.attribute-filter {
+    background-color: var(--white);
+    height: auto;
+    padding:0.5rem 0.25rem;
 }
 
 /* slider container */
+.slider-panel {
+    position: absolute;
+    bottom: 2%;
+    width: 80%;
+    height: 100px;
+    background-color: var(--white);
+    left: 10%;
+}

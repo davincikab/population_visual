@@ -4,19 +4,88 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Population Map</title>
+    <!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
     <link rel="stylesheet" href="map.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid">
         <!-- map -->
         <div id="map"></div>
+
         <div class="filter-panel">
+            <!-- country -->
+            <div class="country-filter">
+                <div class="form-group">
+                    <label for="from" class="label">From</label>
+                    <select name="from" id="from" class="form-control">
+                        <option value="Kenya">Kenya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="to" class="label">To</label>
+                    <select name="to" id="to" class="form-control">
+                        <option value="Uganda">Uganda</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- attribute filters -->
+            <div class="attribute-filter">
+                <div class="form-group">
+                    <label for="to" class="label">Age Group</label>
+                    <select name="to" id="to" class="form-control">
+                        <option value="Uganda">Uganda</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="to" class="label">Gender</label>
+                    <select name="to" id="to" class="form-control">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="economic-zone" class="label">Economic Zone</label>
+                    <select name="economic-zone" id="economic-zone" class="form-control">
+                        <option value="Uganda">High-income countries</option>
+                        <option value="Uganda">Middle-income countries</option>
+                        <option value="Uganda">Upper-middle-income countries</option>
+                        <option value="Uganda">Lower-middle-income countries</option>
+                        <option value="Uganda">Low-income countries</option>
+                        <option value="Uganda">No income group available</option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="region" class="label">Region</label>
+                    <select name="region" id="region" class="form-control">
+                        <option value="Africa">Africa </option>
+                        <option value="Asia">Asia </option>
+                        <option value="Europe">Europe </option>
+                        <option value="Latin America and the Caribbean">Latin America and the Caribbean </option>
+                        <option value="Nothern America">Northern America</option>
+                        <option value="Oceania">Oceania</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="year-filter">
 
         </div>
 
-        <div id="slider"></div>
+        <div class="slider-panel" id="slider">
+
+        </div>
 
         <!-- svg -->
     </div>
+
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
 </body>
 </html>
