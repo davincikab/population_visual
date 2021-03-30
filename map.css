@@ -1,0 +1,26 @@
+:root {
+    --primary:#148812;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#map {
+    width: 100%;
+    height: 100vh;
+    background-color: black;
+}
+
+/* origin destination filer */
+.filter-panel {
+    position: absolute;
+    top:4%;
+    left: 3%;
+    height: 15px;
+    width: 200px;
+    background-color: var(--white);
+}
+
+/* slider container */
