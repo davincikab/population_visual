@@ -10,6 +10,8 @@ var map = new mapboxgl.Map({
     center: [-0.9870, 3.7840], // starting position [lng, lat]
     zoom: 2 // starting zoom
 });
+
+map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
 // 
 // var layer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
 //     attribution:'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
