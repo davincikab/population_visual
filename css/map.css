@@ -1,6 +1,7 @@
 :root {
     --primary:#148812;
     --white:#fff;
+    --black:#000;
 }
 
 body {
@@ -16,20 +17,21 @@ body {
 #map {
     width: 100%;
     height: 100vh;
-    background-color: black;
+    /* background-color: black; */
     z-index: 0;
 }
 
 /* origin destination filer */
 .filter-panel {
     position: absolute;
-    top:4%;
-    left: 3%;
+    top:12%;
+    left: 1%;
     height: auto;
-    width: 200px;
+    width: 300px;
     padding:0.5rem 0.25rem;
     background-color: transparent;
     z-index: 2;
+    box-shadow: 2px 2px 0.3em rgb(88, 88, 88);
 }
 
 .country-filter {
@@ -50,6 +52,17 @@ body {
     margin-bottom: 0.7em;
 }
 
+.year-filter {
+    position: absolute;
+    top: 2%;
+    right: 4%;
+    background-color: var(--white);
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    width: 150px;
+}
+
 .attribute-filter {
     background-color: var(--white);
     height: auto;
@@ -64,4 +77,21 @@ body {
     height: 100px;
     background-color: var(--white);
     left: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.375rem 0.5rem;
+}
+
+.animate-slider {
+    color:var(--black);
+    font-size: 2em;
+    margin-right: 1em;
+}
+
+/* media query tablets screens*/
+
+/* media query Large screens*/
+@media(max-width:50em) {
+
 }
