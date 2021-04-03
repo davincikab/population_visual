@@ -628,8 +628,13 @@ function getCountArrar(data) {
         }
     });
 
+    let sorted = [...arr].sort((a, b) => a - b);
+
+    let max = sorted[sorted.length - 1];
+    let min = sorted[0];
+
     arr = arr.map(value => {
-        return normalizeValue(value);
+        return normalizeValue(value, max, min);
     });
 
     return arr;
@@ -647,9 +652,9 @@ function getSpeedArray(data) {
     return arr;
 }
 
-function normalizeValue(value) {
-    value = value - 1;
-    value = value * 40 / 641 + 1;
+function normalizeValue(value, max, min) {
+    value = value - min;
+    value = value * 10 / (max- min) + 1;
 
     return value;
 }

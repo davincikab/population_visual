@@ -25,7 +25,7 @@
         <svg id="point-map"></svg>
         <div id="renderer-container"></div>
 
-        <div class="filter-panel d-none">
+        <div class="filter-panel">
             <!-- country -->
             <div class="country-filter">
                 <div class="form-group">
@@ -51,6 +51,16 @@
                     <select name="gender" id="gender" class="form-control">
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="economic-zone" class="label">Development Group</label>
+                    <select name="economic-zone" id="economic-zone" class="form-control">
+                        <option value="More developed regions">More developed regions</option>
+                        <option value="Less developed regions">Less developed regions</option>
+                        <option value="Least developed countries">Least developed countries</option>
+                        <option value="Less developed regions, excluding least developed countries">Less developed regions, excluding least developed countries</option>
                     </select>
                 </div>
 
@@ -81,7 +91,7 @@
             </div>
         </div>
 
-        <div class="year-filter d-none">
+        <div class="year-filter">
             <div class="form-group">
                 <label for="from-year" class="label">From</label>
                 <select name="from-year" id="from-year" class="form-control">
