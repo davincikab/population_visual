@@ -65,7 +65,9 @@ function filterActiveLayerByYear(year) {
   xstartarr = getStartArray(xtofromarr);
   xendarr = getStartArray(xtofromarr);
   xspeedarr = getStartArray(xtofromarr);
-  
+
+  countryData = createCountryJson(xflows, countryCoordinates);
+  loadCircleMarker(countryData);
 }
 
 // update the year values

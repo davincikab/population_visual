@@ -17,8 +17,8 @@ console.log(xflows);
 
 var xtofromarr = getXToFromArrary(xflows);
 var xstartarr = getStartArray(xtofromarr);
-var xendarr = getStartArray(xtofromarr);
-var xspeedarr = getStartArray(xtofromarr);
+var xendarr = getEndArray(xtofromarr);
+var xspeedarr = getSpeedArray(xtofromarr);
 var cntarr = getCountArrar(xflows);
 
 var maxage = 500;
@@ -33,9 +33,9 @@ var renderer = new THREE.WebGLRenderer();
 var camera = new THREE.Camera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 var scene = new THREE.Scene();
 
-var newzpos = Math.pow(1.0717735,4);
+var newzpos = Math.pow(1.0717735,3);
 
-camera.position.z = 425; //newzpos;
+camera.position.z = 350; //newzpos;
 renderer.setSize(WIDTH, HEIGHT);
 container.append(renderer.domElement);
 
@@ -87,8 +87,8 @@ var pathpt = d3.geoPath()
     .projection(d3.geoTransform({point: projectPoint}))
     .pointRadius(function(d) { 
         // console.log(d);
-        let path = Math.max(Math.min(Math.sqrt(parseInt(d.properties.osm_id))/90, 36),3)*Math.sqrt(newzpos); 
-        // console.log(path);
+        let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos); 
+        console.log(path);  
 
         return path || 0;
     });
@@ -130,21 +130,23 @@ var projectionr = d3.geoMercator()
         .precision(.1);
 
 var countryCentroids;
+var countryData = createCountryJson(xflows, countryCoordinates);
 var centroidLabels;
 
-d3.json('data/centroid.geojson')
-    .then(data => {
-        console.log(data);
+// d3.json('data/centroid.geojson')
+//     .then(data => {
+//     console.log(data);
 
-        countryCentroids = g.selectAll('pathcbsa')
-        .data(data.features)
+function loadCircleMarker(data) {
+    countryCentroids = g.selectAll('pathcbsa')
+        .data(data)
         .enter()
         .append('path')
         .attr('class', 'feature')
         .style('pointer-events', "all")
         .style('cursor', 'pointer')
         .style('fill', function(d) {
-            if (parseInt(d.properties.osm_id) < 100000) { 
+            if (parseInt(d.properties.net) < 1000) { 
                 return "rgba(180,20,20,1)";
             }
 
@@ -181,8 +183,9 @@ d3.json('data/centroid.geojson')
             d3.select("#renderer-container").classed("hidden", false);
         });
 
+}
 
-    });
+loadCircleMarker(countryData);
 
 // 
 var tempcountarr = 0;
@@ -329,13 +332,13 @@ requestAnimationFrame(update);
 
 
 function updatecities() {
-    var zoomchg = (map.getZoom() - 1)*10;
-    newzpos = Math.pow(1.0717735,zoomchg);
+    var zoomchg = (map.getZoom() - 1) * 10;
+    newzpos = Math.pow(1.0717735, zoomchg);
 
     if (selected == "0") {
         countryCentroids
             .attr("d", function(d){
-                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.osm_id)/90,36),2)*Math.sqrt(newzpos) );
+                pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos));
                 return pathpt(d);
             });
 
@@ -349,7 +352,7 @@ function updatecities() {
 
     var centerchg = [[map.getCenter().lng, map.getCenter().lat]].map(projectionr);
 
-    camera.position.z = 425/newzpos;
+    camera.position.z = 350 / newzpos;
 
     ytrans = centerchg[0][1];
     xtrans = -centerchg[0][0];
@@ -357,7 +360,28 @@ function updatecities() {
 }
 
 function mouseout() {
+    clicked = "0";
+    clickedcbsa = 0;
 
+    selected = "-1";
+
+    centroidLabels.style("opacity",0);
+
+    countryCentroids.transition()
+        .attr("d", function(d){
+
+            pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs)/10,36),2)*Math.sqrt(newzpos) );
+            return pathpt(d);
+        })
+        .style("fill", function (d) {
+            if (d.properties.net < 1000) { return "rgb(180,20,20)";}
+            return "rgb(20,20,180)";
+        })
+        .style("opacity", function (d) {
+            console.log(Math.min(d.properties.abs,1000));
+            return ((Math.min(d.properties.abs,1000) / 1000)*0.6 + 0.3);
+        })
+        .style("stroke-width",0.5);
 }
 
 function click (e, notransition) {
@@ -367,8 +391,8 @@ function click (e, notransition) {
 
     ddd = dd;
     clicked = dd.properties.country;
-    clickedCentroid = dd.properties.osm_id;
-    selected = dd.properties.osm_id;
+    clickedCentroid = dd.properties.country;
+    selected = dd.properties.country;
 
     console.log("click");
     console.log(dd);
@@ -397,18 +421,18 @@ function click (e, notransition) {
             })
             .style("fill", function (d) {
                 if (d.properties.country !== dd.properties.country){
-                    if (parseInt(tempflows[d.properties.country]) > 100000) { return "rgb(220,20,20)";}
+                    if (parseInt(tempflows[d.properties.country]) > 1000) { return "rgb(220,20,20)";}
                     return "rgb(20,20,220)";
                 } else {
-                    if (parseInt(tempflows[d.properties.country]) < 100000) { return "rgb(240,0,0)";}
+                    if (parseInt(tempflows[d.properties.country]) < 1000) { return "rgb(240,0,0)";}
                     return "rgb(0,0,240)";
                 }
             })
             .attr("d", function(d){
                 if (d.properties.country !== dd.properties.country) {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country]))/70,36),2)*Math.sqrt(newzpos) );
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country]))/7, 36),2)*Math.sqrt(newzpos) );
                 } else {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country]))/90,36),2)*Math.sqrt(newzpos) );
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country]))/10, 36),2)*Math.sqrt(newzpos) );
                 }
 
                 return pathpt(d);
@@ -431,10 +455,10 @@ function click (e, notransition) {
 function showPopover(e) {
     let d = e.target.__data__;
 
-    if(clicked = "0" || d.properties.osm_id == clickedCentroid) {
+    if(clicked = "0" || d.properties.country == clickedCentroid) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
-        "<div class='description' >Net Migration: " + d3.format("n")(d.properties.osm_id) + "</div>"
+        "<div class='description' >Net Migration: " + d3.format("n")(d.properties.net) + "</div>"
         "</div>";
 
         popup = new mapboxgl.Popup({ focusAfterOpen:false })
@@ -442,7 +466,7 @@ function showPopover(e) {
             .setHTML(popupContent)
             .addTo(map);
 
-    } else if (tempflows[d.properties.osm_id]) {
+    } else if (tempflows[d.properties.country]) {
 
     }
 }
@@ -477,17 +501,17 @@ function mouseout () {
     countryCentroids.transition()
             .attr("d", function(d){
 
-                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.osm_id)/90,36),2)*Math.sqrt(newzpos) );
+                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs)/10,36),2)*Math.sqrt(newzpos) );
                 return pathpt(d);
             })
             .style("fill", function (d) {
-                if (d.properties.osm_id < 100000) { return "rgb(180,20,20)";}
+                if (d.properties.net < 1000) { return "rgb(180,20,20)";}
                 return "rgb(20,20,180)";
             })
             .style("opacity", function (d) {
-                console.log(Math.min(d.properties.osm_id, 1000));
+                console.log(Math.min(d.properties.abs, 1000));
 
-                return ((Math.min(d.properties.osm_id, 1000) / 1000)*0.6 + 0.3);
+                return ((Math.min(d.properties.abs, 1000) / 1000) * 0.6 + 0.3);
             })
             .style("stroke-width",0.5);
 
@@ -626,4 +650,42 @@ function normalizeValue(value) {
     value = value * 40 / 641 + 1;
 
     return value;
+}
+
+
+function createCountryJson(xflows, countryCoordinates) {
+    let json = [];
+
+    countryCoordinates.forEach(entry => {
+        let flows = xflows[entry.country]
+
+        if(flows) {
+            // console.log(flows);
+            let net = 0;
+            let values = Object.values(flows);
+
+            if(values[0]) {
+                net = values.reduce((a,b) => a + b);
+            }
+            
+            // create a feature
+            json.push({
+                "type":'Feature',
+                "geometry":{
+                    "type":"Point",
+                    "coordinates":[entry.xcoord, entry.ycoord]
+                },
+                "properties":{
+                    "country":entry.country,
+                    "net":net,
+                    "abs":Math.abs(net),
+                    "x":entry.xcoord,
+                    "y":entry.ycoord
+                }
+            });
+
+        }
+    });
+
+    return json;
 }

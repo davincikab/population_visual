@@ -8,7 +8,8 @@ var map = new mapboxgl.Map({
     container: 'map', // container id
     style: 'mapbox://styles/daudi97/ckmx138900dzb17p6ycnl8zh4', // style URL
     center: [-0.9870, 3.7840], // starting position [lng, lat]
-    zoom: 2 // starting zoom
+    zoom: 2,// starting zoom
+    maxZoom:3.5
 });
 
 map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
