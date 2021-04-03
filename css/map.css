@@ -15,10 +15,8 @@ body {
 }
 
 #point-map {
-    position:absolute
-    /* position: absolute;
-    top: 0;
-    left: 0; */
+    position:absolute;
+    pointer-events: none;
 }
 
 canvas {
@@ -31,7 +29,14 @@ canvas {
     width:1368px; 
     height: 700px;
     /* background-color: black; */
-    z-index: 0;
+}
+
+.mapboxgl-interactive {height:700px;}
+
+#renderer-container {
+    height: 700px;
+    width: 1368px;
+    background-color: red;
 }
 
 /* origin destination filer */
@@ -107,6 +112,10 @@ canvas {
 
 }
 
+.hidden {
+    display: none !important;
+}
+.
 /* media query tablets screens*/
 
 /* media query Large screens*/

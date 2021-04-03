@@ -18,7 +18,7 @@ container.append(renderer.domElement);
 
 
 // setup d3 svg
-var svg = d3.select("svg").attr("height",HEIGHT).attr("width",WIDTH).style("pointer-events","none");
+var svg = d3.select("#point-map").attr("height",HEIGHT).attr("width",WIDTH).style("pointer-events","none");
 var g = svg.append("g");
 
 // var projectiona = d3.geo.miller()
@@ -78,7 +78,7 @@ d3.json('data/centroid.geojson')
         .style('opacity', 0.9)
         .style("stroke-width",0.5)
         .style("stroke","rgb(240,240,240)")
-        .on("click",function(d) {click(d);})
+        .on("click", function(d) { click(d); })
         .on("mouseover",function(d) {showPopover.call(this, d);})
         .on("mouseout",function (d) {removePopovers(d);});
 
@@ -86,7 +86,7 @@ d3.json('data/centroid.geojson')
 
         map.on("viewreset", updatecities);
 
-        map.on("movestart", function(){
+        map.on("movestart", function(e){
             svg.classed("hidden", true);
             removePopovers();
             d3.select("#renderer-container").classed("hidden", true);
@@ -115,7 +115,10 @@ function mouseout() {
 }
 
 function click(d) {
+    console.log("click");
+    console.log(d);
 
+    // add a popup window
 }
 
 function showPopover(obj, d) {
