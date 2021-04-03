@@ -10,13 +10,16 @@ var tempflows;
 var popup;
 var activeYear = 1990;
 
-var xtofromarr = [["TR","SY"], ["LB","SY"], ["IQ","SY"]];
-var xstartarr = [[39.9,36.3], [-39.9,36.3], [39.9,36.3]];
-var xendarr = [[-33.6,40.4], [35.6,-34.3], [45.2,33.2]];
-var xspeedarr = [[0,0], [0,0], [0,0],];
-var cntarr = [72, 217, 5, 30];
+var xflows = orign_destionation[filterObject.activeYear];
+xflows = getYearFlows(xflows);
 
-var xflows = {};
+console.log(xflows);
+
+var xtofromarr = getXToFromArrary(xflows);
+var xstartarr = getStartArray(xtofromarr);
+var xendarr = getStartArray(xtofromarr);
+var xspeedarr = getStartArray(xtofromarr);
+var cntarr = getCountArrar(xflows);
 
 var maxage = 500;
 
@@ -37,13 +40,9 @@ renderer.setSize(WIDTH, HEIGHT);
 container.append(renderer.domElement);
 
 // particle system
-
 for (var j = 0; j < cntarr.length; j++) {
-
     cnttotal = cnttotal + Math.round(cntarr[j]);
 }
-
-
 
 // create the particle variables
 var particleCount = cnttotal,
@@ -242,13 +241,17 @@ function update() {
     if (addoffset == "-1") { addoffset = "-2"; }
 
     var k = 0;
-    console.log(particles.vertices);
+    // console.log(particles.vertices);
+
     while(pCount--) {
 
         var particle = particles.vertices[pCount];
-        console.log(pCount);
+        // console.log(pCount);
 
-        if(!particle) continue;
+        if(!particle) {
+            continue;
+        
+        }
 
         if(particle.age >= maxage) {
             particle.age = 0;
@@ -319,10 +322,10 @@ function update() {
     renderer.render(scene, camera);
 
     // set up the next call
-    // requestAnimationFrame(update);
+    requestAnimationFrame(update);   
 }
 
-// requestAnimationFrame(update);
+requestAnimationFrame(update);
 
 
 function updatecities() {
@@ -358,7 +361,10 @@ function mouseout() {
 }
 
 function click (e, notransition) {
+    console.log(e);
+
     let dd = e.target.__data__;
+
     ddd = dd;
     clicked = dd.properties.country;
     clickedCentroid = dd.properties.osm_id;
@@ -371,48 +377,48 @@ function click (e, notransition) {
 
     centroidLabels.attr("x",temppos.x).attr("y",temppos.y + 50).text(dd.properties.country).style("opacity",0.8);
 
-    tempflows = xflows[dd.properties.osm_id] || {};
+    tempflows = xflows[dd.properties.country] || {};
 
     var dur = 500;
     if (notransition == 1) { dur = 0; }
         countryCentroids
             .filter( function(d) {
 
-                return tempflows[d.properties.osm_id];
+                return tempflows[d.properties.country];
             })
             .transition().duration(dur)
             .style("opacity",function(d) {
-                if (d.properties.osm_id == dd.properties.osm_id) { return 1; }
+                if (d.properties.country == dd.properties.country) { return 1; }
                 return 0.9;
             })
             .style("stroke-width",function(d) {
-                if (d.properties.osm_id == dd.properties.osm_id) { return 2; }
-                returnosm_id
+                if (d.properties.country == dd.properties.country) { return 2; }
+                return 0.5
             })
             .style("fill", function (d) {
-                if (d.properties.osm_id !== dd.properties.osm_id){
-                    if (parseInt(tempflows[d.properties.osm_id]) > 100000) { return "rgb(220,20,20)";}
+                if (d.properties.country !== dd.properties.country){
+                    if (parseInt(tempflows[d.properties.country]) > 100000) { return "rgb(220,20,20)";}
                     return "rgb(20,20,220)";
                 } else {
-                    if (parseInt(tempflows[d.properties.osm_id]) < 100000) { return "rgb(240,0,0)";}
+                    if (parseInt(tempflows[d.properties.country]) < 100000) { return "rgb(240,0,0)";}
                     return "rgb(0,0,240)";
                 }
             })
             .attr("d", function(d){
-                if (d.properties.osm_id !== dd.properties.osm_id){
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.osm_id]))/70,36),2)*Math.sqrt(newzpos) );
+                if (d.properties.country !== dd.properties.country) {
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country]))/70,36),2)*Math.sqrt(newzpos) );
                 } else {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.osm_id]))/90,36),2)*Math.sqrt(newzpos) );
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country]))/90,36),2)*Math.sqrt(newzpos) );
                 }
+
                 return pathpt(d);
             });
 
 
 
-
     countryCentroids
         .filter( function(d) {
-            if (tempflows[d.properties.osm_id]) { return false; }
+            if (tempflows[d.properties.country]) { return false; }
             return true;
         })
         .transition()
@@ -471,16 +477,17 @@ function mouseout () {
     countryCentroids.transition()
             .attr("d", function(d){
 
-                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs)/90,36),2)*Math.sqrt(newzpos) );
+                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.osm_id)/90,36),2)*Math.sqrt(newzpos) );
                 return pathpt(d);
             })
             .style("fill", function (d) {
-                if (d.properties.net < 0) { return "rgb(180,20,20)";}
+                if (d.properties.osm_id < 100000) { return "rgb(180,20,20)";}
                 return "rgb(20,20,180)";
             })
             .style("opacity", function (d) {
-                console.log(Math.min(d.properties.abs,1000));
-                return ((Math.min(d.properties.abs,1000) / 1000)*0.6 + 0.3);
+                console.log(Math.min(d.properties.osm_id, 1000));
+
+                return ((Math.min(d.properties.osm_id, 1000) / 1000)*0.6 + 0.3);
             })
             .style("stroke-width",0.5);
 
@@ -493,4 +500,130 @@ function addoffset () {
         particle.position.x = particle.position.x + xtrans;
         particle.position.y = particle.position.y + ytrans;
     }
+}
+
+function getYearFlows(data) {
+    // format the data
+    let dataObj = {};
+    data.forEach(object => {
+        let newObj = Object.assign({}, object);
+
+        delete newObj['country'];
+        delete newObj['Other South'];
+        delete newObj['Other North'];
+        delete newObj['Year'];
+        delete newObj['Total'];
+
+        // filter empty keys
+        for (const key in newObj) {
+            const value = newObj[key];
+
+            if(!parseInt(value, 10)) { 
+                delete newObj[key];
+            } else {
+                newObj[key] = parseInt(value, 10);
+            }
+        }
+
+        dataObj[object.country] = newObj;
+    });
+
+    return dataObj;
+}
+
+function getXToFromArrary(data) {
+    let arr = [];
+
+    for (const key in data) {
+        let country = data[key];
+
+        Object.keys(country).forEach(entry => {
+            arr.push([entry, key]);
+        });
+    }
+
+    return arr;
+}
+
+function getStartArray(data) {
+    let arr = [];
+
+    // 
+    data.forEach(item => {
+        let start = item[1];
+
+        // get the coordinates
+        let country = countryCoordinates.find(entry => entry.country == start);
+
+        if(country) {
+            let coord = [country.xcoord, country.ycoord];
+
+            arr.push(coord);
+        } else {
+            console.log(start);
+        }
+         
+    });
+
+    return arr;
+}
+
+function getEndArray(data) {
+    let arr = [];
+    
+    // 
+    data.forEach(item => {
+        let start = item[0];
+
+        // get the coordinates
+        let country = countryCoordinates.find(entry => entry.country == start);
+
+        if(country) {
+            let coord = [country.xcoord, country.ycoord];
+
+            arr.push(coord);
+        }
+         
+    });
+
+
+    return arr;
+}
+
+function getCountArrar(data) {
+    let arr = [];
+
+    Object.values(data).forEach(entry => {
+        // count
+        for(let key in entry) {
+            let value = entry[key];
+
+            arr.push(value);
+        }
+    });
+
+    arr = arr.map(value => {
+        return normalizeValue(value);
+    });
+
+    return arr;
+}
+
+function getSpeedArray(data) {
+    let arr = [];
+    
+    // 
+    data.forEach(item => {
+        let coord = [0, 0];
+        arr.push(coord);
+    });
+
+    return arr;
+}
+
+function normalizeValue(value) {
+    value = value - 1;
+    value = value * 40 / 641 + 1;
+
+    return value;
 }

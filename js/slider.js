@@ -25,12 +25,15 @@ var sliderTime = d3
     .tickValues(dataTime)
     .default(new Date(1990, 1, 1))
     .on('onchange', val => {
-      d3.select('p#value-time').text(d3.timeFormat('%Y')(val));
+      console.log(val);
+
+      let year = d3.timeFormat('%Y')(val) == 2020 ? 2019 : d3.timeFormat('%Y')(val);
+      d3.select('p#value-time').text(year);
 
       // call the filter function
-      filterObject.activeYear = d3.timeFormat('%Y')(val);
+      filterObject.activeYear = year
 
-      filterActiveLayerByYear(d3.timeFormat('%Y')(val));
+      filterActiveLayerByYear(year);
     });
 
 var gTime = d3
@@ -55,7 +58,14 @@ d3.select('#play').on('click', () => {
 });
 
 function filterActiveLayerByYear(year) {
+  xflows = orign_destionation[year];
+  xflows = getYearFlows(xflows);
 
+  xtofromarr = getXToFromArrary(xflows);
+  xstartarr = getStartArray(xtofromarr);
+  xendarr = getStartArray(xtofromarr);
+  xspeedarr = getStartArray(xtofromarr);
+  
 }
 
 // update the year values
