@@ -9,6 +9,8 @@ var clickedCentroid = 0;
 var tempflows;
 var popup;
 
+var xflows = {};
+
 var maxage = 500;
 
 var VIEW_ANGLE = 90,
@@ -90,8 +92,10 @@ d3.json('data/centroid.geojson')
         .style("stroke-width",0.5)
         .style("stroke","rgb(240,240,240)")
         .on("click", function(d) { click(d); })
-        .on("mouseover",function(d) {showPopover.call(this, d);})
-        .on("mouseout",function (d) {removePopovers(d);});
+        .on("mouseover",function(d) { showPopover.call(this, d); })
+        .on("mouseout",function (d) { removePopovers(d); });
+
+        centroidLabels = g.append("text").text("").attr("x",20).attr("y",20).style("fill","rgb(220,220,220)").attr("text-anchor","middle").style("pointer-events","none").style("opacity",0).style("font-size","14pt");
 
         map.on("click", mouseout);
 
@@ -149,16 +153,69 @@ function mouseout() {
 
 }
 
-function click (dd,notransition) {
+function click (e, notransition) {
+    let dd = e.target.__data__;
     ddd = dd;
     clicked = dd.properties.country;
     clickedCentroid = dd.properties.osm_id;
     selected = dd.properties.osm_id;
 
     console.log("click");
-    console.log(d);
+    console.log(dd);
 
-    // add a popup window
+    var temppos = map.project(new mapboxgl.LngLat(dd.geometry.coordinates[0], dd.geometry.coordinates[1]));
+
+    centroidLabels.attr("x",temppos.x).attr("y",temppos.y + 50).text(dd.properties.country).style("opacity",0.8);
+
+    tempflows = xflows[dd.properties.osm_id] || {};
+
+    var dur = 500;
+    if (notransition == 1) { dur = 0; }
+        countryCentroids
+            .filter( function(d) {
+
+                return tempflows[d.properties.osm_id];
+            })
+            .transition().duration(dur)
+            .style("opacity",function(d) {
+                if (d.properties.osm_id == dd.properties.osm_id) { return 1; }
+                return 0.9;
+            })
+            .style("stroke-width",function(d) {
+                if (d.properties.osm_id == dd.properties.osm_id) { return 2; }
+                returnosm_id
+            })
+            .style("fill", function (d) {
+                if (d.properties.osm_id !== dd.properties.osm_id){
+                    if (parseInt(tempflows[d.properties.osm_id]) > 100000) { return "rgb(220,20,20)";}
+                    return "rgb(20,20,220)";
+                } else {
+                    if (parseInt(tempflows[d.properties.osm_id]) < 100000) { return "rgb(240,0,0)";}
+                    return "rgb(0,0,240)";
+                }
+            })
+            .attr("d", function(d){
+                if (d.properties.osm_id !== dd.properties.osm_id){
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.osm_id]))/70,36),2)*Math.sqrt(newzpos) );
+                } else {
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.osm_id]))/90,36),2)*Math.sqrt(newzpos) );
+                }
+                return pathpt(d);
+            });
+
+
+
+
+    countryCentroids
+        .filter( function(d) {
+            if (tempflows[d.properties.osm_id]) { return false; }
+            return true;
+        })
+        .transition()
+        .style("opacity", 0);
+
+
+    removePopovers();
 }
 
 function showPopover(e) {
