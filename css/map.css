@@ -134,7 +134,7 @@ canvas {
 
 }
 
-.hidden {
+.hidden, .d-none {
     display: none !important;
 }
 .
