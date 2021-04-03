@@ -28,12 +28,12 @@ canvas {
 #map {
     position:absolute; 
     width:1368px; 
-    height: 700px;
+    height: 850px;
     /* background-color: black; */
 }
 
 .mapboxgl-interactive {
-    height:700px;
+    height:850px;
 }
 
 .mapboxgl-popup {

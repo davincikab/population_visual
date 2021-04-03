@@ -1,4 +1,4 @@
-var WIDTH = 1368, HEIGHT=700;
+var WIDTH = 1368, HEIGHT=850;
 var selected = "0";
 var cnttotal = 0;
 var selected = "0";
@@ -33,9 +33,9 @@ var renderer = new THREE.WebGLRenderer();
 var camera = new THREE.Camera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 var scene = new THREE.Scene();
 
-var newzpos = Math.pow(1.0717735,3);
+var newzpos = Math.pow(1.0717735,4);
 
-camera.position.z = 350; //newzpos;
+camera.position.z = 425; //newzpos;
 renderer.setSize(WIDTH, HEIGHT);
 container.append(renderer.domElement);
 
@@ -88,7 +88,6 @@ var pathpt = d3.geoPath()
     .pointRadius(function(d) { 
         // console.log(d);
         let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos); 
-        console.log(path);  
 
         return path || 0;
     });
@@ -138,6 +137,9 @@ var centroidLabels;
 //     console.log(data);
 
 function loadCircleMarker(data) {
+    // remove any paths
+    g.selectAll("path").remove();
+
     countryCentroids = g.selectAll('pathcbsa')
         .data(data)
         .enter()
@@ -348,11 +350,11 @@ function updatecities() {
     }
 
 
-    particleSystem.materials[ 0 ].size = 3/Math.sqrt(newzpos);
+    particleSystem.materials[ 0 ].size = 3/ Math.sqrt(newzpos);
 
     var centerchg = [[map.getCenter().lng, map.getCenter().lat]].map(projectionr);
 
-    camera.position.z = 350 / newzpos;
+    camera.position.z = 425 / newzpos;
 
     ytrans = centerchg[0][1];
     xtrans = -centerchg[0][0];
@@ -387,7 +389,7 @@ function mouseout() {
 function click (e, notransition) {
     console.log(e);
 
-    let dd = e.target.__data__;
+    let dd = e.properties ? e : e.target.__data__;
 
     ddd = dd;
     clicked = dd.properties.country;

@@ -7,9 +7,9 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZGF1ZGk5NyIsImEiOiJjanJtY3B1bjYwZ3F2NGFvOXZ1a
 var map = new mapboxgl.Map({
     container: 'map', // container id
     style: 'mapbox://styles/daudi97/ckmx138900dzb17p6ycnl8zh4', // style URL
-    center: [-0.9870, 3.7840], // starting position [lng, lat]
-    zoom: 2,// starting zoom
-    maxZoom:3.5
+    center: [0,0], // starting position [lng, lat]
+    zoom: 1,// starting zoom
+    maxZoom:4.5
 });
 
 map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
