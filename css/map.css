@@ -31,12 +31,14 @@ canvas {
     /* background-color: black; */
 }
 
-.mapboxgl-interactive {height:700px;}
+.mapboxgl-interactive {
+    height:700px;
+}
 
 #renderer-container {
     height: 700px;
     width: 1368px;
-    background-color: red;
+    background-color: transparent;
 }
 
 /* origin destination filer */

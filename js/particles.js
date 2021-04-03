@@ -1,4 +1,5 @@
 var WIDTH = 1368, HEIGHT=700;
+var selected = "0";
 
 var VIEW_ANGLE = 90,
     ASPECT = WIDTH / HEIGHT,
@@ -53,14 +54,14 @@ var projectionr = d3.geoMercator()
         .translate([0, 0])
         .precision(.1);
 
-var centroids;
+var countryCentroids;
 var centroidLabels;
 
 d3.json('data/centroid.geojson')
     .then(data => {
         console.log(data);
 
-        g.selectAll('pathcbsa')
+        countryCentroids = g.selectAll('pathcbsa')
         .data(data.features)
         .enter()
         .append('path')
@@ -107,7 +108,31 @@ d3.json('data/centroid.geojson')
     });
 
 function updatecities() {
+    var zoomchg = (map.getZoom() - 1)*10;
+    newzpos = Math.pow(1.0717735,zoomchg);
 
+    if (selected == "0") {
+        countryCentroids
+            .attr("d", function(d){
+                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.osm_id)/90,36),2)*Math.sqrt(newzpos) );
+                return pathpt(d);
+            });
+
+    }
+    else { 
+        click(ddd,1); 
+    }
+
+
+    // particleSystem.materials[ 0 ].size = 3/Math.sqrt(newzpos);
+
+    // var centerchg = [[map.getCenter().lng, map.getCenter().lat]].map(projectionr);
+
+    // camera.position.z = 425/newzpos;
+
+    // ytrans = centerchg[0][1];
+    // xtrans = -centerchg[0][0];
+    // addoffset = "-1";
 }
 
 function mouseout() {
