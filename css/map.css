@@ -24,6 +24,7 @@ canvas {
     pointer-events:none;
 }
 
+/* map styling */
 #map {
     position:absolute; 
     width:1368px; 
@@ -35,6 +36,25 @@ canvas {
     height:700px;
 }
 
+.mapboxgl-popup {
+    z-index: 2;
+}
+
+.mapboxgl-popup-content {
+    padding:0 !important;
+    font-size: 1rem;
+}
+
+.popup-content .popup-title {
+    background-color: #ddd;
+    padding: 3px 10px 3px 4px;
+}
+
+.popup-content .description {
+    padding: 10px 10px 15px
+}
+
+/* particle system container */
 #renderer-container {
     height: 700px;
     width: 1368px;

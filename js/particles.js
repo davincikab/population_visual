@@ -1,5 +1,15 @@
 var WIDTH = 1368, HEIGHT=700;
 var selected = "0";
+var cnttotal = 0;
+var selected = "0";
+var addoffset = "0";
+var ddd;
+var clicked = "0";
+var clickedCentroid = 0;
+var tempflows;
+var popup;
+
+var maxage = 500;
 
 var VIEW_ANGLE = 90,
     ASPECT = WIDTH / HEIGHT,
@@ -139,17 +149,37 @@ function mouseout() {
 
 }
 
-function click(d) {
+function click (dd,notransition) {
+    ddd = dd;
+    clicked = dd.properties.country;
+    clickedCentroid = dd.properties.osm_id;
+    selected = dd.properties.osm_id;
+
     console.log("click");
     console.log(d);
 
     // add a popup window
 }
 
-function showPopover(obj, d) {
+function showPopover(e) {
+    let d = e.target.__data__;
 
+    if(clicked = "0" || d.properties.osm_id == clickedCentroid) {
+        var popupContent = "<div class='popup-content'>" + 
+        "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
+        "<div class='description' >Net Migration: " + d3.format("n")(d.properties.osm_id) + "</div>"
+        "</div>";
+
+        popup = new mapboxgl.Popup({ focusAfterOpen:false })
+            .setLngLat(d.geometry.coordinates)
+            .setHTML(popupContent)
+            .addTo(map);
+
+    } else if (tempflows[d.properties.osm_id]) {
+
+    }
 }
 
 function removePopovers(d) {
-
+    popup ? popup.remove() : "";
 }
