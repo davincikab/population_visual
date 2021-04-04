@@ -67,7 +67,17 @@ function filterActiveLayerByYear(year) {
   xspeedarr = getStartArray(xtofromarr);
 
   countryData = createCountryJson(xflows, countryCoordinates);
+
+  svg.classed("hidden", true);
+
   loadCircleMarker(countryData);
+  updatecities();
+
+  setTimeout(() => {
+    svg.classed("hidden", false);
+  }, 500);
+  
+
 }
 
 // update the year values
@@ -145,3 +155,90 @@ d3.select("#age-group")
   .text(function(d) { return d});
 
 // search Origin and destionation
+var suggestions = document.getElementById("suggestions");
+var originInput = document.getElementById("from");
+var destinationInput = document.getElementById("to");
+
+// addEventListener
+originInput.addEventListener("input", function(e) {
+  let value = e.target.value;
+  let results = filterCountries(value);
+  updateListGroup(results, originInput);
+});
+
+destinationInput.addEventListener("input", function(e) {
+  let value = e.target.value;
+  let results = filterCountries(value);
+  updateListGroup(results, destinationInput);
+});
+
+// filter the list of coutries
+function filterCountries(value) {
+  let result = countries.filter(country => country.toLowerCase().includes(value.toLowerCase()));
+
+  // console.log(result);
+  return result.length > 10 ? result.slice(0,10) : result;
+}
+
+function updateListGroup(results, element) {
+  var docFrag = document.createDocumentFragment();
+  // create an list group items
+  results.forEach(country => {
+    let item = createListGroupItem(country, element);
+    docFrag.append(item);
+  });
+
+  suggestions.innerHTML = "";
+  suggestions.append(docFrag);
+}
+
+function createListGroupItem(country, element) {
+  let lisItem = document.createElement("li");
+  lisItem.classList.add("list-group-item");
+  lisItem.innerHTML = country;
+
+  lisItem.addEventListener("click",  function(e) {
+      element.value = country;
+      suggestions.innerHTML = "";
+
+      element == originInput ? filterObject.origin = country : filterObject.destination = country;
+
+      if(filterObject.origin && filterObject.destination) {
+        migrationByOrgnAndDest();
+      }
+  });
+
+  return lisItem;
+}
+
+
+// filter the migrations between the two countries
+function migrationByOrgnAndDest() {
+  clicked = "0";
+  clickedcbsa = 0;
+  selected = "0";
+
+  var { origin, destination} = filterObject;
+
+  // update the cities
+  updatecities();
+
+  // get the xflows data
+  tempflows = xflows[origin];
+
+  // work on the 
+  countryCentroids
+    .filter( function(d) {
+        if (d.properties.country == origin) { return false; }
+        if (d.properties.country == destination) { return false; }
+
+        return true;
+    })
+    .transition()
+    .style("opacity", 0);
+
+    updatecities();
+  
+}
+
+

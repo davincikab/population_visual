@@ -88,6 +88,7 @@ var pathpt = d3.geoPath()
     .pointRadius(function(d) { 
         // console.log(d);
         let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos); 
+        console.log(path);
 
         return path || 0;
     });
@@ -414,11 +415,17 @@ function click (e, notransition) {
             })
             .transition().duration(dur)
             .style("opacity",function(d) {
-                if (d.properties.country == dd.properties.country) { return 1; }
+                if (d.properties.country == dd.properties.country) { 
+                    return 1; 
+                }
                 return 0.9;
             })
             .style("stroke-width",function(d) {
-                if (d.properties.country == dd.properties.country) { return 2; }
+                // console.log(d.properties.country + ", " + dd.properties.country);
+                if (d.properties.country == dd.properties.country) { 
+                    console.log(d);
+                    return 2;
+                }
                 return 0.5
             })
             .style("fill", function (d) {
@@ -433,7 +440,7 @@ function click (e, notransition) {
             .attr("d", function(d){
                 if (d.properties.country !== dd.properties.country) {
                     pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 2, 36), 3)*Math.sqrt(newzpos));
-                    console.log(Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 2, 36), 3) * Math.sqrt(newzpos));
+                    // console.log(Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 2, 36), 3) * Math.sqrt(newzpos));
                     // console.log(Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos));
                 } else {
                     pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 10, 36), 3)*Math.sqrt(newzpos) );
@@ -447,6 +454,8 @@ function click (e, notransition) {
     countryCentroids
         .filter( function(d) {
             if (tempflows[d.properties.country]) { return false; }
+            if (clicked == d.properties.country) { return false; }
+
             return true;
         })
         .transition()
@@ -666,7 +675,7 @@ function getSpeedArray(data) {
 
 function normalizeValue(value, max, min) {
     value = value - min;
-    value = value * 10 / (max- min) + 1;
+    value = value * 20 / (max- min) + 1;
 
     return value;
 }
@@ -708,3 +717,10 @@ function createCountryJson(xflows, countryCoordinates) {
 
     return json;
 }
+
+
+/*
+TODO: 
+    Update particle system with changes on the slider
+    update the particles system on change in orign and destination
+*/
