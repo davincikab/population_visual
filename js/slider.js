@@ -9,6 +9,8 @@ var filterObject = {
   region:"Africa"
 };
 
+var activeFilter = "";
+
 var dataTime = d3.range(0, 35, 5).map(function(d) {
     if(d == 30) return new Date(2019, 1, 1);
 
@@ -146,6 +148,9 @@ d3.select("#age-group")
     // get the gender value
     console.log(e.target.value)
     filterObject.age = e.target.value;
+    activeFilter = "age-group";
+
+    updateCentroidsByAgeGroup();
   })
   .selectAll("option")
   .data(age_groups)
@@ -238,7 +243,73 @@ function migrationByOrgnAndDest() {
     .style("opacity", 0);
 
     updatecities();
-  
+
 }
 
+
+function updateCentroidsByAgeGroup() {
+  // get the active age group
+  let activeAgeGroup = filterObject.age;
+
+  // get the value for the given age group 
+  let ageGroupData = {};
+
+  age.forEach(entry => {
+
+    ageGroupData[entry.country] = {
+      abs:parseInt(entry[activeAgeGroup], 10),
+      net:parseInt(entry[activeAgeGroup], 10),
+      country:entry.country
+    };
+
+  });
+
+  console.log(ageGroupData);
+
+  // enrich the data with coordinates
+  countryData = [];
+
+  countryCoordinates.forEach(entry => {
+    let flows = ageGroupData[entry.country]
+
+    if(flows) {
+      let feature = {
+        "type":'Feature',
+        "geometry":{
+            "type":"Point",
+            "coordinates":[entry.xcoord, entry.ycoord]
+        },
+        "properties":{
+            "country":entry.country,
+            "net":flows.net,
+            "abs":Math.abs(flows.net),
+            "x":entry.xcoord,
+            "y":entry.ycoord
+        }
+      };
+
+      countryData.push(feature);
+    }
+  });
+
+  console.log(countryData);
+  loadCircleMarker(countryData);
+
+}
+
+function updateCentroidsByGender() {
+
+}
+
+function updateCentroidsByRegion() {
+
+}
+
+function visualizeByEconomicZones() {
+
+}
+
+function visualizeByDevelopment() {
+  
+}
 

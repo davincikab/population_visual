@@ -87,7 +87,12 @@ var pathpt = d3.geoPath()
     .projection(d3.geoTransform({point: projectPoint}))
     .pointRadius(function(d) { 
         // console.log(d);
-        let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos); 
+        if(activeFilter == "age-group") {
+            let path = Math.max(Math.min(Math.sqrt(d.properties.abs), 36), 3) * Math.sqrt(newzpos); 
+            return path || 0;
+        }
+
+        let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36), 3) * Math.sqrt(newzpos); 
         console.log(path);
 
         return path || 0;
