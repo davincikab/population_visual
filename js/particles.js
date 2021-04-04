@@ -340,7 +340,7 @@ function updatecities() {
     if (selected == "0") {
         countryCentroids
             .attr("d", function(d){
-                pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos));
+                pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36), 3) * Math.sqrt(newzpos));
                 return pathpt(d);
             });
 
@@ -372,7 +372,7 @@ function mouseout() {
     countryCentroids.transition()
         .attr("d", function(d){
 
-            pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs)/10,36),2)*Math.sqrt(newzpos) );
+            pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36), 3)*Math.sqrt(newzpos) );
             return pathpt(d);
         })
         .style("fill", function (d) {
@@ -432,9 +432,11 @@ function click (e, notransition) {
             })
             .attr("d", function(d){
                 if (d.properties.country !== dd.properties.country) {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country]))/7, 36),2)*Math.sqrt(newzpos) );
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 2, 36), 3)*Math.sqrt(newzpos));
+                    console.log(Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 2, 36), 3) * Math.sqrt(newzpos));
+                    // console.log(Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos));
                 } else {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country]))/10, 36),2)*Math.sqrt(newzpos) );
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 10, 36), 3)*Math.sqrt(newzpos) );
                 }
 
                 return pathpt(d);
@@ -457,19 +459,29 @@ function click (e, notransition) {
 function showPopover(e) {
     let d = e.target.__data__;
 
-    if(clicked = "0" || d.properties.country == clickedCentroid) {
+    popup = new mapboxgl.Popup({ focusAfterOpen:false })
+            .setLngLat(d.geometry.coordinates)
+
+
+    if(clicked == "0" || d.properties.country == clickedCentroid) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
         "<div class='description' >Net Migration: " + d3.format("n")(d.properties.net) + "</div>"
         "</div>";
 
-        popup = new mapboxgl.Popup({ focusAfterOpen:false })
-            .setLngLat(d.geometry.coordinates)
+        popup
             .setHTML(popupContent)
             .addTo(map);
 
     } else if (tempflows[d.properties.country]) {
+        var popupContent = "<div class='popup-content'>" + 
+        "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
+        "<div class='description' >Net Migration: " + d3.format("n")(tempflows[d.properties.country]) + "</div>"
+        "</div>";
 
+        popup
+            .setHTML(popupContent)
+            .addTo(map);
     }
 }
 
