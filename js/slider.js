@@ -124,7 +124,9 @@ d3.select("#gender")
     // get the gender value
     console.log(e.target.value);
     filterObject.gender = e.target.value;
-  })
+
+    updateCentroidsByGender();
+  });
 
 // economic zone
 d3.select("#economic-zone")
@@ -298,6 +300,53 @@ function updateCentroidsByAgeGroup() {
 }
 
 function updateCentroidsByGender() {
+  //get the gender
+  let { activeYear, gender } = filterObject;
+
+  // get the gender data
+  let genderData = globalTotal[gender];
+  console.log(genderData);
+
+  // get the data for the given year
+  let dataObj = {};
+
+  genderData.forEach(data => {
+
+    dataObj[data.country] = {
+      country:data.country,
+      net:parseInt(data[activeYear], 10),
+      abs:parseInt(data[activeYear], 10)
+    }
+
+  });
+
+  // enrich the data with coordinates
+  countryData = [];
+  countryCoordinates.forEach(entry => {
+    let flows = dataObj[entry.country]
+
+    if(flows) {
+      let feature = {
+        "type":'Feature',
+        "geometry":{
+            "type":"Point",
+            "coordinates":[entry.xcoord, entry.ycoord]
+        },
+        "properties":{
+            "country":entry.country,
+            "net":flows.net,
+            "abs":Math.abs(flows.net),
+            "x":entry.xcoord,
+            "y":entry.ycoord
+        }
+      };
+
+      countryData.push(feature);
+    }
+  });
+
+  console.log(countryData);
+  loadCircleMarker(countryData);
 
 }
 
