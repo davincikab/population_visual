@@ -9,7 +9,9 @@ var clickedCentroid = 0;
 var tempflows;
 var popup;
 var activeYear = 1990;
+var requestAnim;
 
+var particleSystem;
 var xflows = orign_destionation[filterObject.activeYear];
 xflows = getYearFlows(xflows);
 
@@ -40,9 +42,16 @@ renderer.setSize(WIDTH, HEIGHT);
 container.append(renderer.domElement);
 
 // particle system
-for (var j = 0; j < cntarr.length; j++) {
-    cnttotal = cnttotal + Math.round(cntarr[j]);
+function getCountTotal(cntarr) {
+    let sum = 0;
+    for (var j = 0; j < cntarr.length; j++) {
+        sum = sum + Math.round(cntarr[j]);
+    }
+
+    return sum;
 }
+
+cnttotal = getCountTotal(cntarr);
 
 // create the particle variables
 var particleCount = cnttotal,
@@ -66,56 +75,48 @@ var speedarr = [[1,0],[1.9,0],[0,4],[0,4]];
 var svg = d3.select("#point-map").attr("height",HEIGHT).attr("width",WIDTH).style("pointer-events","none");
 var g = svg.append("g");
 
-// var projectiona = d3.geo.miller()
-//         .scale(180)
-//         .translate([WIDTH / 2, HEIGHT / 2])
-//         .precision(.1);
-
-
-// var projectionp = d3.geo.miller()
-//         .scale(180)
-//         .translate([0, 0])
-//         .precision(.1);
-
 var projectionr = d3.geoMercator()
         .scale(163)
         .translate([0,0])
         .precision(0.1)
 
-
 var pathpt = d3.geoPath()
     .projection(d3.geoTransform({point: projectPoint}))
     .pointRadius(function(d) { 
-        // console.log(d);
-        if(activeFilter == "age-group") {
-            let path = Math.max(Math.min(Math.sqrt(d.properties.abs), 36), 3) * Math.sqrt(newzpos); 
-            return path || 0;
-        }
-
-        let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36), 3) * Math.sqrt(newzpos); 
-        console.log(path);
+        let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3) * Math.sqrt(newzpos); 
+        // console.log(path);
 
         return path || 0;
     });
 
 // reproject start arrar
-var startarr = xstartarr.map(projectionr);
-var endarr = xendarr.map(projectionr);
+function reprojectArray() {
+    var startarr = xstartarr
+    // .map(projectionr);
+    var endarr = xendarr
+    // .map(projectionr);
 
-for (var l = 0; l < xstartarr.length; l++) {
+    for (var l = 0; l < xstartarr.length; l++) {
 
-    var temppt = map.project(new mapboxgl.LngLat(xstartarr[l][0], xstartarr[l][1]));
-    var temppt2 = map.project(new mapboxgl.LngLat(xendarr[l][0], xendarr[l][1]));
+        var temppt = map.project(new mapboxgl.LngLat(xstartarr[l][0], xstartarr[l][1]));
+        var temppt2 = map.project(new mapboxgl.LngLat(xendarr[l][0], xendarr[l][1]));
 
 
-    startarr[l][0] = temppt.x - WIDTH/2;
-    startarr[l][1] = temppt.y - HEIGHT/2;
+        startarr[l][0] = temppt.x - WIDTH/2;
+        startarr[l][1] = temppt.y - HEIGHT/2;
 
-    endarr[l][0] = temppt2.x - WIDTH/2;
-    endarr[l][1] = temppt2.y - HEIGHT/2;
+        endarr[l][0] = temppt2.x - WIDTH/2;
+        endarr[l][1] = temppt2.y - HEIGHT/2;
+    }
+
+    return [ startarr, endarr ];
+
 }
 
+var [startarr, endarr] = reprojectArray();
+
 // var startarr = xstartarr.map(projectionr);
+console.log(speedarr)
 var [startarr, endarr, speedarr] = negy(startarr,endarr,xspeedarr);
 
 var mnum = startarr.length;
@@ -196,51 +197,82 @@ function loadCircleMarker(data) {
 loadCircleMarker(countryData);
 
 // 
-var tempcountarr = 0;
-for(var p = 0; p < startarr.length; p++) {
-    var cntarrtemp = Math.round(cntarr[p]);
-    tempcountarr = tempcountarr + cntarrtemp;
-    for(var q = 0; q < cntarrtemp; q++) {
+function createParticleSystem() {
+    
+    if (particleSystem) {
+        while(scene.children.length > 0){ 
+            scene.removeChild(scene.children[0]); 
+        }
 
-        var startpoint = [startarr[p%mnum][0] + Math.random()*1 - 0.5, startarr[p%mnum][1] + Math.random()*1 - 0.5];
+        scene = new THREE.Scene();
 
+        particles = new THREE.Geometry(),
+        pMaterial = new THREE.ParticleBasicMaterial({
+            //color: 0xFFDD00,
+            size: 3,
+            map: THREE.ImageUtils.loadTexture(
+                    "images/yellowball.png"
+            ),
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
 
-        var pX = startpoint[0] + (maxage*q/cntarrtemp)*speedarr[p][0],
-                pY = startpoint[1] + (maxage*q/cntarrtemp)*speedarr[p][1],
-                pZ = 0, //Math.random() * 500 - 250,
-                particle = new THREE.Vertex(
-                        new THREE.Vector3(pX, pY, pZ)
-                );
-
-
-        particle.velocity = new THREE.Vector3(
-                speedarr[p%mnum][0],
-                speedarr[p%mnum][1],
-                0);
-
-        particle.startpt = [startpoint[0],startpoint[1]];
-        particle.age = Math.round(maxage*q/cntarrtemp);
-
-        particle.from = xtofromarr[p][0];
-        particle.to = xtofromarr[p][1];
-
-        particle.ystart = pY;
-        particle.xstart = pX;
-        particle.agestart = particle.age;
-
-        particles.vertices.push(particle);
+        particles.vertices = [];
+        scene.removeChild(particleSystem);
+        // cancelAnimationFrame(requestAnim);
     }
+
+    var tempcountarr = 0;
+    for(var p = 0; p < startarr.length; p++) {
+        var cntarrtemp = Math.round(cntarr[p]);
+
+        // console.log(cntarrtemp);
+
+        tempcountarr = tempcountarr + cntarrtemp;
+        for(var q = 0; q < cntarrtemp; q++) {
+
+            var startpoint = [startarr[p%mnum][0] + Math.random()*1 - 0.5, startarr[p%mnum][1] + Math.random()*1 - 0.5];
+            // var startpoint = [startarr[p][0] + Math.random()*1 - 0.5, startarr[p][1] + Math.random()*1 - 0.5];
+           
+
+            var pX = startpoint[0] + (maxage * q / cntarrtemp) * speedarr[p][0],
+                    pY = startpoint[1] + (maxage * q / cntarrtemp) * speedarr[p][1],
+                    pZ = 0, //Math.random() * 500 - 250,
+                    particle = new THREE.Vertex(
+                            new THREE.Vector3(pX, pY, pZ)
+                    );
+
+
+            particle.velocity = new THREE.Vector3(
+                    speedarr[p][0],
+                    speedarr[p][1],
+                    0);
+
+            particle.startpt = [startpoint[0],startpoint[1]];
+            particle.age = Math.round(maxage * q / cntarrtemp);
+
+            particle.from = xtofromarr[p][0];
+            particle.to = xtofromarr[p][1];
+
+            particle.ystart = pY;
+            particle.xstart = pX;
+            particle.agestart = particle.age;
+
+            particles.vertices.push(particle);
+        }
+    }
+
+
+    particleSystem = new THREE.ParticleSystem(
+            particles,
+            pMaterial);
+
+    particleSystem.sortParticles = true;
+
+    scene.addChild(particleSystem);
 }
 
-
-
-var particleSystem = new THREE.ParticleSystem(
-        particles,
-        pMaterial);
-
-particleSystem.sortParticles = true;
-
-scene.addChild(particleSystem);
+createParticleSystem();
 
 // update particles position function
 function update() {
@@ -278,7 +310,7 @@ function update() {
                     particle.velocity);
 
 
-            if (particle.position.x > 600) {
+            if (particle.position.x > 600) {                
                 particle.position.x = particle.xstart + xtrans;
                 particle.position.y = particle.ystart + ytrans;
                 particle.age = particle.agestart;
@@ -333,10 +365,10 @@ function update() {
     renderer.render(scene, camera);
 
     // set up the next call
-    requestAnimationFrame(update);   
+    requestAnim = requestAnimationFrame(update);   
 }
 
-requestAnimationFrame(update);
+requestAnim = requestAnimationFrame(update);
 
 
 function updatecities() {
@@ -346,7 +378,7 @@ function updatecities() {
     if (selected == "0") {
         countryCentroids
             .attr("d", function(d){
-                pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36), 3) * Math.sqrt(newzpos));
+                pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3) * Math.sqrt(newzpos));
                 return pathpt(d);
             });
 
@@ -378,7 +410,7 @@ function mouseout() {
     countryCentroids.transition()
         .attr("d", function(d){
 
-            pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36), 3)*Math.sqrt(newzpos) );
+            pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3)*Math.sqrt(newzpos) );
             return pathpt(d);
         })
         .style("fill", function (d) {
@@ -394,7 +426,7 @@ function mouseout() {
 
 function click (e, notransition) {
     console.log(e);
-
+    if(!e) return;
     let dd = e.properties ? e : e.target.__data__;
 
     ddd = dd;
@@ -423,7 +455,7 @@ function click (e, notransition) {
                 if (d.properties.country == dd.properties.country) { 
                     return 1; 
                 }
-                return 0.9;
+                return 0.8;
             })
             .style("stroke-width",function(d) {
                 // console.log(d.properties.country + ", " + dd.properties.country);
@@ -444,11 +476,11 @@ function click (e, notransition) {
             })
             .attr("d", function(d){
                 if (d.properties.country !== dd.properties.country) {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 2, 36), 3)*Math.sqrt(newzpos));
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 70, 36), 3)*Math.sqrt(newzpos));
                     // console.log(Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 2, 36), 3) * Math.sqrt(newzpos));
                     // console.log(Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos));
                 } else {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 10, 36), 3)*Math.sqrt(newzpos) );
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 90, 36), 3)*Math.sqrt(newzpos) );
                 }
 
                 return pathpt(d);
@@ -480,7 +512,7 @@ function showPopover(e) {
     if(clicked == "0" || d.properties.country == clickedCentroid) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
-        "<div class='description' >Net Migration: " + d3.format("n")(d.properties.net) + "</div>"
+        "<div class='description' >Net Migration: " + d3.format(",.2r")(d.properties.net) + "</div>"
         "</div>";
 
         popup
@@ -489,8 +521,8 @@ function showPopover(e) {
 
     } else if (tempflows[d.properties.country]) {
         var popupContent = "<div class='popup-content'>" + 
-        "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
-        "<div class='description' >Net Migration: " + d3.format("n")(tempflows[d.properties.country]) + "</div>"
+        "<div class='popup-title'><strong>" + d.properties.country +" to "+ clicked+"</strong></div>" +
+        "<div class='description' >Net Migration: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
         "</div>";
 
         popup
@@ -511,8 +543,8 @@ function negy (coorarry, endarray, diffarry) {
         coorarry[i][1] = coorarry[i][1] * -1;
         endarray[i][1] = endarray[i][1] * -1;
 
-        diffarry[i][0] = (endarray[i][0] - coorarry[i][0])/maxage;
-        diffarry[i][1] = (endarray[i][1] - coorarry[i][1])/maxage;
+        diffarry[i][0] = (endarray[i][0] - coorarry[i][0]) / maxage;
+        diffarry[i][1] = (endarray[i][1] - coorarry[i][1]) / maxage;
     }
 
     return [coorarry, endarray, diffarry];
@@ -529,7 +561,7 @@ function mouseout () {
     countryCentroids.transition()
             .attr("d", function(d){
 
-                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs)/10,36),2)*Math.sqrt(newzpos) );
+                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs)/90,36),2)*Math.sqrt(newzpos) );
                 return pathpt(d);
             })
             .style("fill", function (d) {
@@ -568,7 +600,7 @@ function getYearFlows(data) {
 
         // filter empty keys
         for (const key in newObj) {
-            const value = newObj[key];
+            const value = newObj[key].toString().replaceAll(",", "");
 
             if(!parseInt(value, 10)) { 
                 delete newObj[key];
@@ -648,7 +680,7 @@ function getCountArrar(data) {
     Object.values(data).forEach(entry => {
         // count
         for(let key in entry) {
-            let value = entry[key];
+            let value = entry[key].toString().replaceAll(",", "");
 
             arr.push(value);
         }
@@ -679,8 +711,9 @@ function getSpeedArray(data) {
 }
 
 function normalizeValue(value, max, min) {
+
     value = value - min;
-    value = value * 20 / (max- min) + 1;
+    value = value * 700 / (max - min) + 1;
 
     return value;
 }
@@ -696,6 +729,8 @@ function createCountryJson(xflows, countryCoordinates) {
             // console.log(flows);
             let net = 0;
             let values = Object.values(flows);
+
+            // console.log(values);
 
             if(values[0]) {
                 net = values.reduce((a,b) => a + b);
@@ -726,6 +761,6 @@ function createCountryJson(xflows, countryCoordinates) {
 
 /*
 TODO: 
-    Update particle system with changes on the slider
-    update the particles system on change in orign and destination
+    Update particle system with changes on the time-slider
+    Update the particles system on change in origin and destination
 */

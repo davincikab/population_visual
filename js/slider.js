@@ -67,9 +67,12 @@ function filterActiveLayerByYear(year) {
   xstartarr = getStartArray(xtofromarr);
   xendarr = getStartArray(xtofromarr);
   xspeedarr = getStartArray(xtofromarr);
+  cntarr = getCountArrar(xflows);
 
   countryData = createCountryJson(xflows, countryCoordinates);
 
+  cancelAnimationFrame(requestAnim);
+  //  d3.select("#renderer-container").classed("hidden", true);
   svg.classed("hidden", true);
 
   loadCircleMarker(countryData);
@@ -78,8 +81,16 @@ function filterActiveLayerByYear(year) {
   setTimeout(() => {
     svg.classed("hidden", false);
   }, 500);
-  
 
+  // update the particle system
+  var [startarr, endarr] = reprojectArray();
+  var [startarr, endarr, speedarr] = negy(startarr, endarr, xspeedarr);
+  mnum = startarr.length;
+  cnttotal = getCountTotal(cntarr);
+
+  createParticleSystem();
+
+  requestAnimationFrame(update);
 }
 
 // update the year values
@@ -125,6 +136,7 @@ d3.select("#gender")
     console.log(e.target.value);
     filterObject.gender = e.target.value;
 
+    activeFilter = "gender";
     updateCentroidsByGender();
   });
 
@@ -142,6 +154,10 @@ d3.select("#region")
     // get the gender value
     console.log(e.target.value)
     filterObject.region = e.target.value;
+
+    activeFilter = "region";
+
+    updateCentroidsByRegion();
   });
 
 // age - groups
@@ -257,10 +273,13 @@ function updateCentroidsByAgeGroup() {
   let ageGroupData = {};
 
   age.forEach(entry => {
+    // console.log(entry);
+
+    let value = entry[activeAgeGroup].toString().replaceAll(",", "");
 
     ageGroupData[entry.country] = {
-      abs:parseInt(entry[activeAgeGroup], 10),
-      net:parseInt(entry[activeAgeGroup], 10),
+      abs:parseInt(value, 10),
+      net:parseInt(value, 10),
       country:entry.country
     };
 
@@ -311,11 +330,14 @@ function updateCentroidsByGender() {
   let dataObj = {};
 
   genderData.forEach(data => {
+    let value = data[activeYear].toString().replaceAll(",", "");
+
+    console.log(value);
 
     dataObj[data.country] = {
       country:data.country,
-      net:parseInt(data[activeYear], 10),
-      abs:parseInt(data[activeYear], 10)
+      net:parseInt(value, 10),
+      abs:parseInt(value, 10)
     }
 
   });
@@ -351,7 +373,51 @@ function updateCentroidsByGender() {
 }
 
 function updateCentroidsByRegion() {
+  let { activeYear, region } = filterObject;
+  var data = globalTotal.total
 
+  // get the data for the given year
+  data = data.filter(entry => entry.region == region);
+  console.log(data);
+
+  let dataObj = {};
+
+  data.forEach(entry => {
+    let value = entry[activeYear].toString().replaceAll(",", "");
+    dataObj[entry.country] = {
+      country:entry.country,
+      net:parseInt(value, 10),
+      abs:parseInt(value, 10)
+    }
+
+  });
+
+  countryData = [];
+  countryCoordinates.forEach(entry => {
+    let flows = dataObj[entry.country]
+
+    if(flows) {
+      let feature = {
+        "type":'Feature',
+        "geometry":{
+            "type":"Point",
+            "coordinates":[entry.xcoord, entry.ycoord]
+        },
+        "properties":{
+            "country":entry.country,
+            "net":flows.net,
+            "abs":Math.abs(flows.net),
+            "x":entry.xcoord,
+            "y":entry.ycoord
+        }
+      };
+
+      countryData.push(feature);
+    }
+  });
+  
+  console.log(countryData);
+  loadCircleMarker(countryData);
 }
 
 function visualizeByEconomicZones() {
