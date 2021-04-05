@@ -55,7 +55,7 @@ d3.select('#play').on('click', () => {
   // update the slider values
 });
 
-d3.select('#play').on('click', () => {
+d3.select('#pause').on('click', () => {
 
 });
 
@@ -137,7 +137,10 @@ d3.select("#gender")
     filterObject.gender = e.target.value;
 
     activeFilter = "gender";
+
+    container.classList.add("d-none");
     updateCentroidsByGender();
+    updatecities();
   });
 
 // economic zone
@@ -146,6 +149,8 @@ d3.select("#economic-zone")
     // get the gender value
     console.log(e.target.value)
     filterObject.economicZone = e.target.value;
+
+    container.classList.add("d-none");
   });
 
 // region
@@ -157,7 +162,10 @@ d3.select("#region")
 
     activeFilter = "region";
 
+    container.classList.add("d-none");
+
     updateCentroidsByRegion();
+    updatecities();
   });
 
 // age - groups
@@ -168,7 +176,9 @@ d3.select("#age-group")
     filterObject.age = e.target.value;
     activeFilter = "age-group";
 
+    container.classList.add("d-none");
     updateCentroidsByAgeGroup();
+    updatecities();
   })
   .selectAll("option")
   .data(age_groups)

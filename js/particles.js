@@ -84,7 +84,7 @@ var pathpt = d3.geoPath()
     .projection(d3.geoTransform({point: projectPoint}))
     .pointRadius(function(d) { 
         let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3) * Math.sqrt(newzpos); 
-        // console.log(path);
+        console.log(path);
 
         return path || 0;
     });
@@ -414,7 +414,7 @@ function mouseout() {
             return pathpt(d);
         })
         .style("fill", function (d) {
-            if (d.properties.net < 1000) { return "rgb(180,20,20)";}
+            // if (d.properties.net < 1000) { return "rgb(180,20,20)";}
             return "rgb(20,20,180)";
         })
         .style("opacity", function (d) {
@@ -467,11 +467,11 @@ function click (e, notransition) {
             })
             .style("fill", function (d) {
                 if (d.properties.country !== dd.properties.country){
-                    if (parseInt(tempflows[d.properties.country]) > 1000) { return "rgb(220,20,20)";}
+                    // if (parseInt(tempflows[d.properties.country]) > 1000) { return "rgb(220,20,20)";}
                     return "rgb(20,20,220)";
                 } else {
-                    if (parseInt(tempflows[d.properties.country]) < 1000) { return "rgb(240,0,0)";}
-                    return "rgb(0,0,240)";
+                    // if (parseInt(tempflows[d.properties.country]) < 1000) { return "rgb(240,0,0)";}
+                    return "rgb(0,240,240)";
                 }
             })
             .attr("d", function(d){
@@ -565,7 +565,7 @@ function mouseout () {
                 return pathpt(d);
             })
             .style("fill", function (d) {
-                if (d.properties.net < 1000) { return "rgb(180,20,20)";}
+                // if (d.properties.net < 1000) { return "rgb(180,20,20)";}
                 return "rgb(20,20,180)";
             })
             .style("opacity", function (d) {
@@ -762,5 +762,6 @@ function createCountryJson(xflows, countryCoordinates) {
 /*
 TODO: 
     Update particle system with changes on the time-slider
+
     Update the particles system on change in origin and destination
 */
