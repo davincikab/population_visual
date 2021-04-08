@@ -11,21 +11,21 @@ An interactive map on world population migration
 - JavaScript
 
 ### Mapbox
-Mapbox[https://docs.mapbox.com/]
+[Mapbox](https://docs.mapbox.com/) 
 
 ### Threejs
-Threejs[https://threejs.org/]
+[Threejs](https://threejs.org/)
 
 ### D3js
-D3.js[https://d3js.org/] 
+[D3.js](https://d3js.org/)
 
 ### Excel
-Excel
+[Excel](https://www.microsoft.com/en-ww/microsoft-365/excel)
 
 ### QGIS
-QGIS 
+[QGIS](https://qgis.org/)
 
 ### JavaScript
-JavaScript[https://developer.mozilla.org/en-US/docs/Web/JavaScript]
+[JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
 
