@@ -24,6 +24,17 @@ canvas {
     pointer-events:none;
 }
 
+#reset-view {
+    position: absolute;
+    z-index: 2;
+    top: 15%;
+    right: 5%;
+    background-color: white;
+    padding: 0.4em 0.5em;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 /* map styling */
 #map {
     position:absolute; 

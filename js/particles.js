@@ -155,9 +155,9 @@ function loadCircleMarker(data) {
         .style('pointer-events', "all")
         .style('cursor', 'pointer')
         .style('fill', function(d) {
-            if (parseInt(d.properties.net) < 1000) { 
-                return "rgba(180,20,20,1)";
-            }
+            // if (parseInt(d.properties.net) < 1000) { 
+            //     return "rgba(180,20,20,1)";
+            // }
 
             return "rgba(20,20,180,1)";
         })
@@ -187,6 +187,7 @@ function loadCircleMarker(data) {
         });
 
         map.on("moveend", function(){
+            
             updatecities();
             svg.classed("hidden", false);
             d3.select("#renderer-container").classed("hidden", false);
@@ -251,8 +252,8 @@ function createParticleSystem() {
             particle.startpt = [startpoint[0],startpoint[1]];
             particle.age = Math.round(maxage * q / cntarrtemp);
 
-            particle.from = xtofromarr[p][0];
-            particle.to = xtofromarr[p][1];
+            particle.from = xtofromarr[p][1];
+            particle.to = xtofromarr[p][0];
 
             particle.ystart = pY;
             particle.xstart = pX;
@@ -317,7 +318,21 @@ function update() {
             }
 
             particle.age++;
-        } else if (particle.from == selected || particle.to == selected) {
+        } else if (particle.from == selected && particle.to == filterObject.destination) {
+            // console.log("filter");
+            if (particle.position.x > 600) {
+                particle.position.x = particle.xstart + xtrans;
+                particle.position.y = particle.ystart + ytrans;
+                particle.age = particle.agestart;
+            }
+
+            particle.position.addSelf(
+                    particle.velocity);
+
+
+            particle.age++;
+        }  
+        else if (particle.from == selected || particle.to == selected) {
 
             if (particle.position.x > 600) {
                 particle.position.x = particle.xstart + xtrans;
@@ -388,7 +403,7 @@ function updatecities() {
     }
 
 
-    particleSystem.materials[ 0 ].size = 3/ Math.sqrt(newzpos);
+    particleSystem.materials[ 0 ].size = 3 / Math.sqrt(newzpos);
 
     var centerchg = [[map.getCenter().lng, map.getCenter().lat]].map(projectionr);
 
@@ -418,13 +433,13 @@ function mouseout() {
             return "rgb(20,20,180)";
         })
         .style("opacity", function (d) {
-            console.log(Math.min(d.properties.abs,1000));
-            return ((Math.min(d.properties.abs,1000) / 1000)*0.6 + 0.3);
+            console.log(Math.min(d.properties.abs, 1000));
+            return ((Math.min(d.properties.abs, 1000) / 1000) * 0.6 + 0.3);
         })
         .style("stroke-width",0.5);
 }
 
-function click (e, notransition) {
+function click(e, notransition) {
     console.log(e);
     if(!e) return;
     let dd = e.properties ? e : e.target.__data__;
@@ -471,7 +486,7 @@ function click (e, notransition) {
                     return "rgb(20,20,220)";
                 } else {
                     // if (parseInt(tempflows[d.properties.country]) < 1000) { return "rgb(240,0,0)";}
-                    return "rgb(0,240,240)";
+                    return "rgb(0,240,0)";
                 }
             })
             .attr("d", function(d){
@@ -536,7 +551,7 @@ function removePopovers(d) {
 }
 
 // negate the array 
-function negy (coorarry, endarray, diffarry) {
+function negy(coorarry, endarray, diffarry) {
 
     for (var i=0; i< coorarry.length; i++) {
 
@@ -761,7 +776,6 @@ function createCountryJson(xflows, countryCoordinates) {
 
 /*
 TODO: 
-    Update particle system with changes on the time-slider
-
     Update the particles system on change in origin and destination
+    Toggle the animation on and off
 */

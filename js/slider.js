@@ -33,7 +33,7 @@ var sliderTime = d3
       d3.select('p#value-time').text(year);
 
       // call the filter function
-      filterObject.activeYear = year
+      filterObject.activeYear = year;
 
       filterActiveLayerByYear(year);
     });
@@ -80,6 +80,12 @@ function filterActiveLayerByYear(year) {
 
   setTimeout(() => {
     svg.classed("hidden", false);
+
+    if(container.classList.contains("d-none")) {
+      container.classList.remove("d-none");
+      selected = "0";
+      clicked = "0";
+    }
   }, 500);
 
   // update the particle system
@@ -252,6 +258,7 @@ function migrationByOrgnAndDest() {
   selected = "0";
 
   var { origin, destination} = filterObject;
+  let originFeature = countryData.find(country => country.properties.country == origin);
 
   // update the cities
   updatecities();
@@ -272,6 +279,16 @@ function migrationByOrgnAndDest() {
 
     updatecities();
 
+    console.log(xflows);
+    
+    // recreate the 
+    selected = origin;  
+    ddd = originFeature;
+
+    // hide the animation tab
+    container.classList.add("d-none");
+
+  cancelAnimationFrame(requestAnim);
 }
 
 
@@ -428,6 +445,8 @@ function updateCentroidsByRegion() {
   
   console.log(countryData);
   loadCircleMarker(countryData);
+
+  // update the 
 }
 
 function visualizeByEconomicZones() {
@@ -438,3 +457,13 @@ function visualizeByDevelopment() {
   
 }
 
+function updateParticleSystem() {
+
+}
+
+d3.select("#reset-view")
+  .on("click", resetView);
+  
+function resetView(e) {
+  window.location.reload();
+}
