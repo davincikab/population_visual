@@ -59,5 +59,8 @@ Select a gender to visualize the total migration by gender on a given active yea
 ### Development Groups
 ### Economic Zone
 
+### Refresh tool
+Reset the map back to default.
+
 
 

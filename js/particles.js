@@ -39,7 +39,7 @@ var newzpos = Math.pow(1.0717735,4);
 
 camera.position.z = 425; //newzpos;
 renderer.setSize(WIDTH, HEIGHT);
-container.append(renderer.domElement);
+// container.append(renderer.domElement);
 
 // particle system
 function getCountTotal(cntarr) {
@@ -195,7 +195,7 @@ function loadCircleMarker(data) {
 
 }
 
-loadCircleMarker(countryData);
+// loadCircleMarker(countryData);
 
 // 
 function createParticleSystem() {
@@ -726,11 +726,12 @@ function getSpeedArray(data) {
 }
 
 function normalizeValue(value, max, min) {
+    value = value / 2000;
+    console.log(value);
 
-    value = value - min;
-    value = value * 700 / (max - min) + 1;
+    // value = value * 700 / (max - min) + 1;
 
-    return value;
+    return value < 1 ? 1 : Math.round(value);
 }
 
 

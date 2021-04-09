@@ -35,29 +35,18 @@ var sliderTime = d3
       // call the filter function
       filterObject.activeYear = year;
 
-      filterActiveLayerByYear(year);
+      // filterActiveLayerByYear(year);
     });
 
 var gTime = d3
     .select('div#slider-time')
     .append('svg')
-    .attr('width', 600)
+    .attr('width', 400)
     .attr('height', 100)
     .append('g')
     .attr('transform', 'translate(30,30)');
 
-gTime.call(sliderTime);
-
-d3.select('p#value-time').text(d3.timeFormat('%Y')(sliderTime.value()));
-
-// animate slider
-d3.select('#play').on('click', () => {
-  // update the slider values
-});
-
-d3.select('#pause').on('click', () => {
-
-});
+// gTime.call(sliderTime);
 
 function filterActiveLayerByYear(year) {
   xflows = orign_destionation[year];
@@ -99,157 +88,38 @@ function filterActiveLayerByYear(year) {
   requestAnimationFrame(update);
 }
 
-// update the year values
-d3.select('#from-year')
-  .on("change", val => {
-    console.log(val);
-
-    // update the filter Object
-    filterObject.dateRange = [val.target.value, filterObject.dateRange[1]];
+// search Origin and destionation
+d3.select("#from")
+  .on("change", function(e) {
+    console.log(e);
+    updateOriginDestionation(this, e.target.value);
   })
   .selectAll('option')
-  .data(dataTime)
-  .enter()
-  .append('option')
-  .attr('value', function (d) { return d3.timeFormat('%Y')(d) })
-  .text(function(d) { return d3.timeFormat('%Y')(d)})
-
-d3.select('#to-year')
-  .on("change", val => {
-    console.log(val.target.value);
-
-    // update the filter Object
-    filterObject.dateRange = [filterObject.dateRange[0], val.target.value];
-  })
-  .selectAll('option')
-  .data(dataTime)
-  .enter()
-  .append('option')
-  .attr('value', function (d) { return d3.timeFormat('%Y')(d) })
-  .text(function(d) { 
-    return d3.timeFormat('%Y')(d)
-  });
-
-
-function filterByDateRange() {
-
-}
-
-// gender
-d3.select("#gender")
-  .on("change", e =>  {
-    // get the gender value
-    console.log(e.target.value);
-    filterObject.gender = e.target.value;
-
-    activeFilter = "gender";
-
-    container.classList.add("d-none");
-    updateCentroidsByGender();
-    updatecities();
-  });
-
-// economic zone
-d3.select("#economic-zone")
-  .on("change", e =>  {
-    // get the gender value
-    console.log(e.target.value)
-    filterObject.economicZone = e.target.value;
-
-    container.classList.add("d-none");
-  });
-
-// region
-d3.select("#region")
-  .on("change", e =>  {
-    // get the gender value
-    console.log(e.target.value)
-    filterObject.region = e.target.value;
-
-    activeFilter = "region";
-
-    container.classList.add("d-none");
-
-    updateCentroidsByRegion();
-    updatecities();
-  });
-
-// age - groups
-d3.select("#age-group")
-  .on("change", e =>  {
-    // get the gender value
-    console.log(e.target.value)
-    filterObject.age = e.target.value;
-    activeFilter = "age-group";
-
-    container.classList.add("d-none");
-    updateCentroidsByAgeGroup();
-    updatecities();
-  })
-  .selectAll("option")
-  .data(age_groups)
+  .data(countries)
   .enter()
   .append("option")
-  .attr('value', function(d) { return d})
-  .text(function(d) { return d});
+  .attr('value', function(d) { return d; })
+  .text(function(d){ return d});
 
-// search Origin and destionation
-var suggestions = document.getElementById("suggestions");
-var originInput = document.getElementById("from");
-var destinationInput = document.getElementById("to");
+d3.select("#to")
+  .on("change", function(e) {
+    console.log(e);
+    updateOriginDestionation(this, e.target.value);
+  })
+  .selectAll('option')
+  .data(countries)
+  .enter()
+  .append("option")
+  .attr('value', function(d) { return d; })
+  .text(function(d){ return d; })
 
-// addEventListener
-originInput.addEventListener("input", function(e) {
-  let value = e.target.value;
-  let results = filterCountries(value);
-  updateListGroup(results, originInput);
-});
+function updateOriginDestionation(country, element) {
+  element == originInput ? filterObject.origin = country : filterObject.destination = country;
+  // migrationByOrgnAndDest();
 
-destinationInput.addEventListener("input", function(e) {
-  let value = e.target.value;
-  let results = filterCountries(value);
-  updateListGroup(results, destinationInput);
-});
-
-// filter the list of coutries
-function filterCountries(value) {
-  let result = countries.filter(country => country.toLowerCase().includes(value.toLowerCase()));
-
-  // console.log(result);
-  return result.length > 10 ? result.slice(0,10) : result;
+  // update the the map origin and destination
+  // map.getPaintPr
 }
-
-function updateListGroup(results, element) {
-  var docFrag = document.createDocumentFragment();
-  // create an list group items
-  results.forEach(country => {
-    let item = createListGroupItem(country, element);
-    docFrag.append(item);
-  });
-
-  suggestions.innerHTML = "";
-  suggestions.append(docFrag);
-}
-
-function createListGroupItem(country, element) {
-  let lisItem = document.createElement("li");
-  lisItem.classList.add("list-group-item");
-  lisItem.innerHTML = country;
-
-  lisItem.addEventListener("click",  function(e) {
-      element.value = country;
-      suggestions.innerHTML = "";
-
-      element == originInput ? filterObject.origin = country : filterObject.destination = country;
-
-      if(filterObject.origin && filterObject.destination) {
-        migrationByOrgnAndDest();
-      }
-  });
-
-  return lisItem;
-}
-
 
 // filter the migrations between the two countries
 function migrationByOrgnAndDest() {
@@ -258,7 +128,13 @@ function migrationByOrgnAndDest() {
   selected = "0";
 
   var { origin, destination} = filterObject;
-  let originFeature = countryData.find(country => country.properties.country == origin);
+  let originFeature;
+
+  if(origin == "all") {
+    originFeature = countryData.find(country => country.properties.country == origin);
+  } else {
+    originFeature = countryData;
+  }
 
   // update the cities
   updatecities();
@@ -269,6 +145,7 @@ function migrationByOrgnAndDest() {
   // work on the 
   countryCentroids
     .filter( function(d) {
+        if(origin == "all") { return true; }
         if (d.properties.country == origin) { return false; }
         if (d.properties.country == destination) { return false; }
 
@@ -289,176 +166,6 @@ function migrationByOrgnAndDest() {
     container.classList.add("d-none");
 
   cancelAnimationFrame(requestAnim);
-}
-
-
-function updateCentroidsByAgeGroup() {
-  // get the active age group
-  let activeAgeGroup = filterObject.age;
-
-  // get the value for the given age group 
-  let ageGroupData = {};
-
-  age.forEach(entry => {
-    // console.log(entry);
-
-    let value = entry[activeAgeGroup].toString().replaceAll(",", "");
-
-    ageGroupData[entry.country] = {
-      abs:parseInt(value, 10),
-      net:parseInt(value, 10),
-      country:entry.country
-    };
-
-  });
-
-  console.log(ageGroupData);
-
-  // enrich the data with coordinates
-  countryData = [];
-
-  countryCoordinates.forEach(entry => {
-    let flows = ageGroupData[entry.country]
-
-    if(flows) {
-      let feature = {
-        "type":'Feature',
-        "geometry":{
-            "type":"Point",
-            "coordinates":[entry.xcoord, entry.ycoord]
-        },
-        "properties":{
-            "country":entry.country,
-            "net":flows.net,
-            "abs":Math.abs(flows.net),
-            "x":entry.xcoord,
-            "y":entry.ycoord
-        }
-      };
-
-      countryData.push(feature);
-    }
-  });
-
-  console.log(countryData);
-  loadCircleMarker(countryData);
-
-}
-
-function updateCentroidsByGender() {
-  //get the gender
-  let { activeYear, gender } = filterObject;
-
-  // get the gender data
-  let genderData = globalTotal[gender];
-  console.log(genderData);
-
-  // get the data for the given year
-  let dataObj = {};
-
-  genderData.forEach(data => {
-    let value = data[activeYear].toString().replaceAll(",", "");
-
-    console.log(value);
-
-    dataObj[data.country] = {
-      country:data.country,
-      net:parseInt(value, 10),
-      abs:parseInt(value, 10)
-    }
-
-  });
-
-  // enrich the data with coordinates
-  countryData = [];
-  countryCoordinates.forEach(entry => {
-    let flows = dataObj[entry.country]
-
-    if(flows) {
-      let feature = {
-        "type":'Feature',
-        "geometry":{
-            "type":"Point",
-            "coordinates":[entry.xcoord, entry.ycoord]
-        },
-        "properties":{
-            "country":entry.country,
-            "net":flows.net,
-            "abs":Math.abs(flows.net),
-            "x":entry.xcoord,
-            "y":entry.ycoord
-        }
-      };
-
-      countryData.push(feature);
-    }
-  });
-
-  console.log(countryData);
-  loadCircleMarker(countryData);
-
-}
-
-function updateCentroidsByRegion() {
-  let { activeYear, region } = filterObject;
-  var data = globalTotal.total
-
-  // get the data for the given year
-  data = data.filter(entry => entry.region == region);
-  console.log(data);
-
-  let dataObj = {};
-
-  data.forEach(entry => {
-    let value = entry[activeYear].toString().replaceAll(",", "");
-    dataObj[entry.country] = {
-      country:entry.country,
-      net:parseInt(value, 10),
-      abs:parseInt(value, 10)
-    }
-
-  });
-
-  countryData = [];
-  countryCoordinates.forEach(entry => {
-    let flows = dataObj[entry.country]
-
-    if(flows) {
-      let feature = {
-        "type":'Feature',
-        "geometry":{
-            "type":"Point",
-            "coordinates":[entry.xcoord, entry.ycoord]
-        },
-        "properties":{
-            "country":entry.country,
-            "net":flows.net,
-            "abs":Math.abs(flows.net),
-            "x":entry.xcoord,
-            "y":entry.ycoord
-        }
-      };
-
-      countryData.push(feature);
-    }
-  });
-  
-  console.log(countryData);
-  loadCircleMarker(countryData);
-
-  // update the 
-}
-
-function visualizeByEconomicZones() {
-
-}
-
-function visualizeByDevelopment() {
-  
-}
-
-function updateParticleSystem() {
-
 }
 
 d3.select("#reset-view")

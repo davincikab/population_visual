@@ -1,8 +1,3 @@
-// var map = L.map('map', {
-//     center:[-0.9870, 3.7840],
-//     zoom:2
-// });
-
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGF1ZGk5NyIsImEiOiJjanJtY3B1bjYwZ3F2NGFvOXZ1a29iMmp6In0.9ZdvuGInodgDk7cv-KlujA';
 var map = new mapboxgl.Map({
     container: 'map', // container id
@@ -13,46 +8,40 @@ var map = new mapboxgl.Map({
 });
 
 map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
-// 
-// var layer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}' + (L.Browser.retina ? '@2x.png' : '.png'), {
-//     attribution:'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
-//     subdomains: 'abcd',
-//     maxZoom: 20,
-//     minZoom: 0
-//  }).addTo(map);
-
-// L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-//     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-//     maxZoom: 18,
-//     id: 'mapbox/streets-v11',
-//     tileSize: 512,
-//     zoomOffset: -1,
-//     accessToken:'pk.eyJ1IjoiZGF1ZGk5NyIsImEiOiJjanJtY3B1bjYwZ3F2NGFvOXZ1a29iMmp6In0.9ZdvuGInodgDk7cv-KlujA'
-// });
 
 
-// // display the countries layer
-// var countrBoundaries = L.geoJSON(null, {
-//     style:function(feature) {
-//         return {
-//             fill:'blue',
-//             fillOpacity:0.8
-//         }
-//     }
-// }).addTo(map);
+map.on("load", function(e) {
+    map.addSource('countries',{
+        "type":"geojson",
+        "data":"/data/country_data.geojson"
+    });
 
-// fetch('data/countries.geojson')
-//     .then(res => res.json())
-//     .then(response => {
-//         console.log(response);
+    map.addLayer({
+        'id':'country-data',
+        'source':'countries',
+        'type':'fill',
+        'paint':{
+            'fill-color':[
+                'interpolate',
+                ['linear'],
+                ['get', 'value'],
+                10,
+                '#ccece6',
+                20,
+                '#99d8c9',
+                30,
+                '#66c2a4',
+                40,
+                '#2ca25f',
+                50,
+                '#2ca25f'  
+            ],
+            'fill-opacity':0.7
+        }
+    });
 
-//         countrBoundaries.addData(response);
-//     })
-//     .catch(error => {
-//         console.error(error);
-//     });
 
-// // fire map events
-// map.on("click", function(e) {
-//     console.log(e);
-// });
+    map.on("click", function(e) {
+        
+    })
+});

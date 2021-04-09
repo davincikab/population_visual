@@ -27,10 +27,10 @@ canvas {
 #reset-view {
     position: absolute;
     z-index: 2;
-    top: 15%;
-    right: 2%;
+    top: 18%;
+    right: 0%;
     background-color: white;
-    padding: 0.4em 0.5em;
+    padding: 0.4em 0.8em;
     border-radius: 4px;
     cursor: pointer;
 }
@@ -40,6 +40,7 @@ canvas {
     position:absolute; 
     width:1368px; 
     height: 850px;
+    /* width: 1200px; */
     /* background-color: black; */
 }
 
@@ -87,9 +88,9 @@ canvas {
 
 .country-filter {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-around;
-    background-color: var(--white);
+    background-color: rgba(255, 255, 255, 0.76);
     padding:0.5rem 0.25rem;
     margin-bottom: 1em;
 }
@@ -136,15 +137,15 @@ canvas {
 /* slider container */
 .slider-panel {
     position: absolute;
-    bottom: 2%;
-    width: 80%;
+    top: 2%;
+    right: 0%;
+    width: auto;
     height: 100px;
-    background-color: var(--white);
-    left: 10%;
+    background-color: rgba(255, 255, 255, 0.836);
     display: flex;
     justify-content: flex-start;
-    /* align-items: center; */
     padding: 0.375rem 0.5rem;
+    display: none;
 }
 
 .animate-slider {
@@ -154,17 +155,6 @@ canvas {
 }
 
 /* svg styling */
-.feature {
-
-}
-
 .hidden, .d-none {
     display: none !important;
-}
-.
-/* media query tablets screens*/
-
-/* media query Large screens*/
-@media(max-width:50em) {
-
 }
