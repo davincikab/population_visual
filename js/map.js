@@ -7,7 +7,7 @@ var map = new mapboxgl.Map({
     maxZoom:4.5
 });
 
-map.addControl(new mapboxgl.NavigationControl(), 'bottom-left');
+map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 
 
 map.on("load", function(e) {

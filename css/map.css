@@ -76,7 +76,7 @@ canvas {
 /* origin destination filer */
 .filter-panel {
     position: absolute;
-    top:2%;
+    top:15%;
     left: 1%;
     height: auto;
     padding:0.5rem 0.25rem;
