@@ -79,11 +79,16 @@ canvas {
     top:2%;
     left: 1%;
     height: auto;
-    width: 300px;
     padding:0.5rem 0.25rem;
     background-color: transparent;
     z-index: 2;
     box-shadow: 2px 2px 0.3em rgb(88, 88, 88);
+}
+
+.filter-panel select {
+    border-radius: 2px;
+    border: 1px solid #ddd;
+    padding:0.3em 0.5em;
 }
 
 .country-filter {
@@ -92,7 +97,6 @@ canvas {
     justify-content: space-around;
     background-color: rgba(255, 255, 255, 0.76);
     padding:0.5rem 0.25rem;
-    margin-bottom: 1em;
 }
 
 .form-group {
@@ -145,7 +149,6 @@ canvas {
     display: flex;
     justify-content: flex-start;
     padding: 0.375rem 0.5rem;
-    display: none;
 }
 
 .animate-slider {

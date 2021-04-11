@@ -73,7 +73,7 @@ var speedarr = [[1,0],[1.9,0],[0,4],[0,4]];
 
 // setup d3 svg
 var svg = d3.select("#point-map").attr("height",HEIGHT).attr("width",WIDTH).style("pointer-events","none");
-var g = svg.append("g");
+var g;
 
 var projectionr = d3.geoMercator()
         .scale(163)
@@ -84,7 +84,7 @@ var pathpt = d3.geoPath()
     .projection(d3.geoTransform({point: projectPoint}))
     .pointRadius(function(d) { 
         let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3) * Math.sqrt(newzpos); 
-        console.log(path);
+        // console.log(path);
 
         return path || 0;
     });
@@ -143,10 +143,12 @@ var centroidLabels;
 //     .then(data => {
 //     console.log(data);
 
-function loadCircleMarker(data) {
+function loadCircleMarker(data) {    
     // remove any paths
-    g.selectAll("path").remove();
+    svg.select("g").remove();
+    g = svg.append("g");
 
+    console.log("Adding path");
     countryCentroids = g.selectAll('pathcbsa')
         .data(data)
         .enter()
@@ -195,7 +197,7 @@ function loadCircleMarker(data) {
 
 }
 
-// loadCircleMarker(countryData);
+loadCircleMarker(countryData);
 
 // 
 function createParticleSystem() {
@@ -383,7 +385,7 @@ function update() {
     requestAnim = requestAnimationFrame(update);   
 }
 
-requestAnim = requestAnimationFrame(update);
+// requestAnim = requestAnimationFrame(update);
 
 
 function updatecities() {
@@ -391,6 +393,8 @@ function updatecities() {
     newzpos = Math.pow(1.0717735, zoomchg);
 
     if (selected == "0") {
+        console.log("Selected: "+ selected);
+
         countryCentroids
             .attr("d", function(d){
                 pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3) * Math.sqrt(newzpos));
@@ -398,8 +402,9 @@ function updatecities() {
             });
 
     }
-    else { 
-        click(ddd,1); 
+    else {
+        console.log("Selected: "+ selected); 
+        click(undefined,1); 
     }
 
 
@@ -429,7 +434,6 @@ function mouseout() {
             return pathpt(d);
         })
         .style("fill", function (d) {
-            // if (d.properties.net < 1000) { return "rgb(180,20,20)";}
             return "rgb(20,20,180)";
         })
         .style("opacity", function (d) {
@@ -441,8 +445,18 @@ function mouseout() {
 
 function click(e, notransition) {
     console.log(e);
-    if(!e) return;
+    if(!e) {
+        ddd = undefined;
+        clicked = "0";
+        clickedCentroid = "0";
+        selected = "0";
+
+        return;
+    }
+
     let dd = e.properties ? e : e.target.__data__;
+
+    console.log(dd);
 
     ddd = dd;
     clicked = dd.properties.country;
@@ -461,39 +475,48 @@ function click(e, notransition) {
     var dur = 500;
     if (notransition == 1) { dur = 0; }
         countryCentroids
+            .style("fill", function (d) {
+                if(d.properties.country == selected) {
+                    return "yellow";
+                }
+            })
+            .style("opacity" , function (d) {
+                if(d.properties.country == selected) {
+                    return 1;
+                }
+            })
             .filter( function(d) {
-
+                if(d.properties.country == selected) { return false };
                 return tempflows[d.properties.country];
             })
             .transition().duration(dur)
             .style("opacity",function(d) {
-                if (d.properties.country == dd.properties.country) { 
-                    return 1; 
+                if (tempflows[d.properties.country]) { 
+                    return 0.8; 
+                } else {
+                    return 1;
                 }
-                return 0.8;
             })
             .style("stroke-width",function(d) {
-                // console.log(d.properties.country + ", " + dd.properties.country);
-                if (d.properties.country == dd.properties.country) { 
-                    console.log(d);
+                if (tempflows[d.properties.country]) { 
+                    return 0.5;
+                } else {
                     return 2;
                 }
-                return 0.5
+                
             })
             .style("fill", function (d) {
-                if (d.properties.country !== dd.properties.country){
-                    // if (parseInt(tempflows[d.properties.country]) > 1000) { return "rgb(220,20,20)";}
-                    return "rgb(20,20,220)";
+                if (tempflows[d.properties.country]) {
+                    return "green";
                 } else {
-                    // if (parseInt(tempflows[d.properties.country]) < 1000) { return "rgb(240,0,0)";}
-                    return "rgb(0,240,0)";
+                    console.log(d);
+                    return "yellow";
                 }
             })
             .attr("d", function(d){
                 if (d.properties.country !== dd.properties.country) {
                     pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 70, 36), 3)*Math.sqrt(newzpos));
-                    // console.log(Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 2, 36), 3) * Math.sqrt(newzpos));
-                    // console.log(Math.max(Math.min(Math.sqrt(d.properties.abs) / 10, 36),3 ) * Math.sqrt(newzpos));
+                    
                 } else {
                     pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 90, 36), 3)*Math.sqrt(newzpos) );
                 }
@@ -502,11 +525,10 @@ function click(e, notransition) {
             });
 
 
-
     countryCentroids
         .filter( function(d) {
+            if(d.properties.country == selected) { return false };
             if (tempflows[d.properties.country]) { return false; }
-            if (clicked == d.properties.country) { return false; }
 
             return true;
         })
@@ -566,6 +588,8 @@ function negy(coorarry, endarray, diffarry) {
 }
 
 function mouseout () {
+    console.log("Mouseout");
+
     clicked = "0";
     clickedcbsa = 0;
 
@@ -584,8 +608,6 @@ function mouseout () {
                 return "rgb(20,20,180)";
             })
             .style("opacity", function (d) {
-                console.log(Math.min(d.properties.abs, 1000));
-
                 return ((Math.min(d.properties.abs, 1000) / 1000) * 0.6 + 0.3);
             })
             .style("stroke-width",0.5);
@@ -727,7 +749,7 @@ function getSpeedArray(data) {
 
 function normalizeValue(value, max, min) {
     value = value / 2000;
-    console.log(value);
+    // console.log(value);
 
     // value = value * 700 / (max - min) + 1;
 

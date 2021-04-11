@@ -1,6 +1,6 @@
 var filterObject = {
-  origin:"",
-  destination:"",
+  origin:"all",
+  destination:"all",
   activeYear:1990,
   dateRange:[1990, 1990],
   gender:'Male',
@@ -8,6 +8,8 @@ var filterObject = {
   economicZone:"High-income countries",
   region:"Africa"
 };
+
+var originInput = document.getElementById("from");
 
 var activeFilter = "";
 
@@ -35,7 +37,7 @@ var sliderTime = d3
       // call the filter function
       filterObject.activeYear = year;
 
-      // filterActiveLayerByYear(year);
+      filterActiveLayerByYear(year);
     });
 
 var gTime = d3
@@ -46,7 +48,7 @@ var gTime = d3
     .append('g')
     .attr('transform', 'translate(30,30)');
 
-// gTime.call(sliderTime);
+gTime.call(sliderTime);
 
 function filterActiveLayerByYear(year) {
   xflows = orign_destionation[year];
@@ -60,32 +62,34 @@ function filterActiveLayerByYear(year) {
 
   countryData = createCountryJson(xflows, countryCoordinates);
 
-  cancelAnimationFrame(requestAnim);
+  // cancelAnimationFrame(requestAnim);
   //  d3.select("#renderer-container").classed("hidden", true);
   svg.classed("hidden", true);
 
   loadCircleMarker(countryData);
+  console.log("Migration for year: " + year);
+
   updatecities();
 
-  setTimeout(() => {
-    svg.classed("hidden", false);
+  // setTimeout(() => {
+  //   svg.classed("hidden", false);
 
-    if(container.classList.contains("d-none")) {
-      container.classList.remove("d-none");
-      selected = "0";
-      clicked = "0";
-    }
-  }, 500);
+  //   if(container.classList.contains("d-none")) {
+  //     container.classList.remove("d-none");
+  //     selected = "0";
+  //     clicked = "0";
+  //   }
+  // }, 500);
 
-  // update the particle system
-  var [startarr, endarr] = reprojectArray();
-  var [startarr, endarr, speedarr] = negy(startarr, endarr, xspeedarr);
-  mnum = startarr.length;
-  cnttotal = getCountTotal(cntarr);
+  // // update the particle system
+  // var [startarr, endarr] = reprojectArray();
+  // var [startarr, endarr, speedarr] = negy(startarr, endarr, xspeedarr);
+  // mnum = startarr.length;
+  // cnttotal = getCountTotal(cntarr);
 
-  createParticleSystem();
+  // createParticleSystem();
 
-  requestAnimationFrame(update);
+  // requestAnimationFrame(update);
 }
 
 // search Origin and destionation
@@ -113,9 +117,12 @@ d3.select("#to")
   .attr('value', function(d) { return d; })
   .text(function(d){ return d; })
 
-function updateOriginDestionation(country, element) {
+function updateOriginDestionation(element, country) {
   element == originInput ? filterObject.origin = country : filterObject.destination = country;
-  // migrationByOrgnAndDest();
+
+  if(filterObject.origin != "" && filterObject.destination != "") {
+    migrationByOrgnAndDest();
+  }
 
   // update the the map origin and destination
   // map.getPaintPr
@@ -123,49 +130,91 @@ function updateOriginDestionation(country, element) {
 
 // filter the migrations between the two countries
 function migrationByOrgnAndDest() {
+  xflows = orign_destionation[filterObject.activeYear];
+  xflows = getYearFlows(xflows);
+
+  console.log("Filtering");
+  console.log(filterObject);
+
   clicked = "0";
   clickedcbsa = 0;
   selected = "0";
 
   var { origin, destination} = filterObject;
-  let originFeature;
+  let originFeature = undefined;
+  let destinationFeature = undefined;
 
   if(origin == "all") {
-    originFeature = countryData.find(country => country.properties.country == origin);
+    loadCircleMarker(countryData);
   } else {
-    originFeature = countryData;
+
+    let flows = xflows[origin];
+    tempflows = xflows[origin];
+
+    originFeature = countryData.find(cntry => cntry.properties.country == origin);
+    console.log(flows);
+
+    // get the countries
+    let activeCountries = Object.keys(flows);
+
+    console.log(activeCountries);
+    let destinationCountry = countryData.filter(country => activeCountries.indexOf(country.properties.country) != -1);
+    destinationCountry.push(originFeature);
+
+    // countryData = createCountryJson(xflows, countryCoordinates);
+    loadCircleMarker(destinationCountry);
+  }
+
+  if(destination == "all") {
+    // originFeature = countryData.find(country => country.properties.country == destination);
+  } else {
+    // get th destination feature
+    destinationFeature = countryData.find(cntry => cntry.properties.country == destination);
+    let activeCountries = [destinationFeature, originFeature];
+
+    // recreate country data
+    loadCircleMarker(activeCountries);
   }
 
   // update the cities
-  updatecities();
+  // updatecities();
 
   // get the xflows data
-  tempflows = xflows[origin];
+  // tempflows = xflows[origin];
 
-  // work on the 
+  // change the colors
   countryCentroids
-    .filter( function(d) {
-        if(origin == "all") { return true; }
-        if (d.properties.country == origin) { return false; }
-        if (d.properties.country == destination) { return false; }
+    .style("fill", function(d){
+      if (d.properties.country == origin) { return 'yellow'; }
 
-        return true;
+      if(destination == "all") {
+        return 'green';
+      }
+
+      if (d.properties.country == destination) { return 'green'; }
+
+      return "rgba(20,20,180,1)";
     })
     .transition()
-    .style("opacity", 0);
+    .style("opacity", 1);
 
-    updatecities();
+    // updatecities();
 
-    console.log(xflows);
+    // console.log(xflows);
     
     // recreate the 
-    selected = origin;  
-    ddd = originFeature;
+    if(originFeature) {
+      ddd = originFeature;
+      selected = origin;  
+      clicked = origin;
+      clickedCentroid = origin;
+      selected = origin;
+    }
+    
 
     // hide the animation tab
     container.classList.add("d-none");
-
-  cancelAnimationFrame(requestAnim);
+    // cancelAnimationFrame(requestAnim);
 }
 
 d3.select("#reset-view")
