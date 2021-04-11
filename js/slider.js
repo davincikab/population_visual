@@ -71,15 +71,15 @@ function filterActiveLayerByYear(year) {
 
   updatecities();
 
-  // setTimeout(() => {
-  //   svg.classed("hidden", false);
+  setTimeout(() => {
+    svg.classed("hidden", false);
 
-  //   if(container.classList.contains("d-none")) {
-  //     container.classList.remove("d-none");
-  //     selected = "0";
-  //     clicked = "0";
-  //   }
-  // }, 500);
+    // if(container.classList.contains("d-none")) {
+    //   container.classList.remove("d-none");
+    //   selected = "0";
+    //   clicked = "0";
+    // }
+  }, 500);
 
   // // update the particle system
   // var [startarr, endarr] = reprojectArray();

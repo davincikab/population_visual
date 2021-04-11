@@ -167,7 +167,11 @@ function loadCircleMarker(data) {
         .style('opacity', 0.9)
         .style("stroke-width",0.5)
         .style("stroke","rgb(240,240,240)")
-        .on("click", function(d) { click(d); })
+        .on("click", function(d) { 
+            console.log(d);
+
+            click(d.target.__data__); 
+        })
         .on("mouseover",function(d) { showPopover.call(this, d); })
         .on("mouseout",function (d) { removePopovers(d); });
 
@@ -393,8 +397,6 @@ function updatecities() {
     newzpos = Math.pow(1.0717735, zoomchg);
 
     if (selected == "0") {
-        console.log("Selected: "+ selected);
-
         countryCentroids
             .attr("d", function(d){
                 pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3) * Math.sqrt(newzpos));
@@ -403,8 +405,8 @@ function updatecities() {
 
     }
     else {
-        console.log("Selected: "+ selected); 
-        click(undefined,1); 
+        console.log("Firing Click"); 
+        click(ddd, 1); 
     }
 
 
@@ -419,45 +421,31 @@ function updatecities() {
     addoffset = "-1";
 }
 
-function mouseout() {
-    clicked = "0";
-    clickedcbsa = 0;
+// function mouseout() {
+//     clicked = "0";
+//     clickedcbsa = 0;
 
-    selected = "-1";
+//     selected = "-1";
 
-    centroidLabels.style("opacity",0);
+//     centroidLabels.style("opacity",0);
 
-    countryCentroids.transition()
-        .attr("d", function(d){
+//     countryCentroids.transition()
+//         .attr("d", function(d){
 
-            pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3)*Math.sqrt(newzpos) );
-            return pathpt(d);
-        })
-        .style("fill", function (d) {
-            return "rgb(20,20,180)";
-        })
-        .style("opacity", function (d) {
-            console.log(Math.min(d.properties.abs, 1000));
-            return ((Math.min(d.properties.abs, 1000) / 1000) * 0.6 + 0.3);
-        })
-        .style("stroke-width",0.5);
-}
+//             pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3)*Math.sqrt(newzpos) );
+//             return pathpt(d);
+//         })
+//         .style("fill", function (d) {
+//             return "rgb(20,20,180)";
+//         })
+//         .style("opacity", function (d) {
+//             console.log(Math.min(d.properties.abs, 1000));
+//             return ((Math.min(d.properties.abs, 1000) / 1000) * 0.6 + 0.3);
+//         })
+//         .style("stroke-width",0.5);
+// }
 
-function click(e, notransition) {
-    console.log(e);
-    if(!e) {
-        ddd = undefined;
-        clicked = "0";
-        clickedCentroid = "0";
-        selected = "0";
-
-        return;
-    }
-
-    let dd = e.properties ? e : e.target.__data__;
-
-    console.log(dd);
-
+function click(dd, notransition) {
     ddd = dd;
     clicked = dd.properties.country;
     clickedCentroid = dd.properties.country;
@@ -475,38 +463,21 @@ function click(e, notransition) {
     var dur = 500;
     if (notransition == 1) { dur = 0; }
         countryCentroids
-            .style("fill", function (d) {
-                if(d.properties.country == selected) {
-                    return "yellow";
-                }
-            })
-            .style("opacity" , function (d) {
-                if(d.properties.country == selected) {
-                    return 1;
-                }
-            })
             .filter( function(d) {
-                if(d.properties.country == selected) { return false };
+                // if(d.properties.country == selected) { return false };
                 return tempflows[d.properties.country];
             })
             .transition().duration(dur)
             .style("opacity",function(d) {
-                if (tempflows[d.properties.country]) { 
-                    return 0.8; 
-                } else {
-                    return 1;
-                }
+                if (d.properties.country == dd.properties.country) { return 1; }
+                return 0.9;
             })
             .style("stroke-width",function(d) {
-                if (tempflows[d.properties.country]) { 
-                    return 0.5;
-                } else {
-                    return 2;
-                }
-                
+                if (d.properties.country == dd.properties.country) { return 2; }
+                return 0.5;
             })
             .style("fill", function (d) {
-                if (tempflows[d.properties.country]) {
+                if (d.properties.country !== dd.properties.country){
                     return "green";
                 } else {
                     console.log(d);
@@ -593,14 +564,14 @@ function mouseout () {
     clicked = "0";
     clickedcbsa = 0;
 
-    selected = "-1";
+    selected = "0";
 
     centroidLabels.style("opacity",0);
 
     countryCentroids.transition()
             .attr("d", function(d){
 
-                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs)/90,36),2)*Math.sqrt(newzpos) );
+                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 90,36),2)*Math.sqrt(newzpos) );
                 return pathpt(d);
             })
             .style("fill", function (d) {
@@ -646,6 +617,15 @@ function getYearFlows(data) {
             }
         }
 
+        // add the country totals
+        let values = Object.values(newObj);
+
+        let sum = values.length > 1 ? values.reduce((a,b) => a + b) : 0;
+        // console.log(sum);
+
+        newObj[object.country] = sum;
+
+        // .map((a,b) => a + b);
         dataObj[object.country] = newObj;
     });
 
@@ -714,15 +694,23 @@ function getEndArray(data) {
 function getCountArrar(data) {
     let arr = [];
 
-    Object.values(data).forEach(entry => {
-        // count
-        for(let key in entry) {
-            let value = entry[key].toString().replaceAll(",", "");
+    let countries = Object.keys(data);
+    countries.forEach(country => {
+        let entry = data[country];
 
-            arr.push(value);
-        }
+        arr.push(entry[country]);
     });
 
+    // Object.values(data).forEach(entry => {
+    //     // count
+    //     for(let key in entry) {
+    //         let value = entry[key].toString().replaceAll(",", "");
+
+    //         arr.push(value);
+    //     }
+    // });
+
+    console.log(arr);
     let sorted = [...arr].sort((a, b) => a - b);
 
     let max = sorted[sorted.length - 1];
@@ -766,9 +754,10 @@ function createCountryJson(xflows, countryCoordinates) {
         if(flows) {
             // console.log(flows);
             let net = 0;
-            let values = Object.values(flows);
-
-            // console.log(values);
+            let values = flows[entry.country];
+            net = values;
+            
+            console.log(values);
 
             if(values[0]) {
                 net = values.reduce((a,b) => a + b);
