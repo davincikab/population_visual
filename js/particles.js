@@ -39,7 +39,7 @@ var newzpos = Math.pow(1.0717735,4);
 
 camera.position.z = 425; //newzpos;
 renderer.setSize(WIDTH, HEIGHT);
-// container.append(renderer.domElement);
+container.append(renderer.domElement);
 
 // particle system
 function getCountTotal(cntarr) {
@@ -83,7 +83,7 @@ var projectionr = d3.geoMercator()
 var pathpt = d3.geoPath()
     .projection(d3.geoTransform({point: projectPoint}))
     .pointRadius(function(d) { 
-        let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3) * Math.sqrt(newzpos); 
+        let path = Math.max(Math.min(Math.sqrt(d.properties.abs) / 200, 36), 3) * Math.sqrt(newzpos); 
         // console.log(path);
 
         return path || 0;
@@ -204,10 +204,10 @@ function loadCircleMarker(data) {
 loadCircleMarker(countryData);
 
 // 
-function createParticleSystem() {
+function createParticleSystem(startarr) {
     
     if (particleSystem) {
-        while(scene.children.length > 0){ 
+        while(scene.children.length > 0) { 
             scene.removeChild(scene.children[0]); 
         }
 
@@ -231,41 +231,35 @@ function createParticleSystem() {
 
     var tempcountarr = 0;
     for(var p = 0; p < startarr.length; p++) {
-        var cntarrtemp = Math.round(cntarr[p]);
-
-        // console.log(cntarrtemp);
-
-        tempcountarr = tempcountarr + cntarrtemp;
-        for(var q = 0; q < cntarrtemp; q++) {
+        for(var q = 0; q < cntarr[p]; q++) {
 
             var startpoint = [startarr[p%mnum][0] + Math.random()*1 - 0.5, startarr[p%mnum][1] + Math.random()*1 - 0.5];
-            // var startpoint = [startarr[p][0] + Math.random()*1 - 0.5, startarr[p][1] + Math.random()*1 - 0.5];
-           
 
-            var pX = startpoint[0] + (maxage * q / cntarrtemp) * speedarr[p][0],
-                    pY = startpoint[1] + (maxage * q / cntarrtemp) * speedarr[p][1],
-                    pZ = 0, //Math.random() * 500 - 250,
-                    particle = new THREE.Vertex(
-                            new THREE.Vector3(pX, pY, pZ)
-                    );
+
+            var pX = startpoint[0] + (maxage*q/cntarr[p])*speedarr[p][0],
+                pY = startpoint[1] + (maxage*q/cntarr[p])*speedarr[p][1],
+                pZ = 0, //Math.random() * 500 - 250,
+                particle = new THREE.Vertex(
+                    new THREE.Vector3(pX, pY, pZ)
+                );
 
 
             particle.velocity = new THREE.Vector3(
-                    speedarr[p][0],
-                    speedarr[p][1],
-                    0);
+                speedarr[p%mnum][0],
+                speedarr[p%mnum][1],
+                0);	
 
             particle.startpt = [startpoint[0],startpoint[1]];
-            particle.age = Math.round(maxage * q / cntarrtemp);
+            particle.age = Math.round(maxage*q/cntarr[p]);
 
-            particle.from = xtofromarr[p][1];
-            particle.to = xtofromarr[p][0];
+            particle.from = xtofromarr[p][0];
+            particle.to = xtofromarr[p][1];
 
             particle.ystart = pY;
             particle.xstart = pX;
             particle.agestart = particle.age;
 
-            particles.vertices.push(particle);
+		    particles.vertices.push(particle);
         }
     }
 
@@ -279,7 +273,7 @@ function createParticleSystem() {
     scene.addChild(particleSystem);
 }
 
-createParticleSystem();
+createParticleSystem(startarr);
 
 // update particles position function
 function update() {
@@ -300,7 +294,6 @@ function update() {
 
         if(!particle) {
             continue;
-        
         }
 
         if(particle.age >= maxage) {
@@ -324,20 +317,7 @@ function update() {
             }
 
             particle.age++;
-        } else if (particle.from == selected && particle.to == filterObject.destination) {
-            // console.log("filter");
-            if (particle.position.x > 600) {
-                particle.position.x = particle.xstart + xtrans;
-                particle.position.y = particle.ystart + ytrans;
-                particle.age = particle.agestart;
-            }
-
-            particle.position.addSelf(
-                    particle.velocity);
-
-
-            particle.age++;
-        }  
+        } 
         else if (particle.from == selected || particle.to == selected) {
 
             if (particle.position.x > 600) {
@@ -389,7 +369,7 @@ function update() {
     requestAnim = requestAnimationFrame(update);   
 }
 
-// requestAnim = requestAnimationFrame(update);
+requestAnim = requestAnimationFrame(update);
 
 
 function updatecities() {
@@ -399,7 +379,7 @@ function updatecities() {
     if (selected == "0") {
         countryCentroids
             .attr("d", function(d){
-                pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3) * Math.sqrt(newzpos));
+                pathpt.pointRadius(Math.max(Math.min(Math.sqrt(d.properties.abs) / 200, 36), 3) * Math.sqrt(newzpos));
                 return pathpt(d);
             });
 
@@ -486,10 +466,10 @@ function click(dd, notransition) {
             })
             .attr("d", function(d){
                 if (d.properties.country !== dd.properties.country) {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 70, 36), 3)*Math.sqrt(newzpos));
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 156, 36), 3)*Math.sqrt(newzpos));
                     
                 } else {
-                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 90, 36), 3)*Math.sqrt(newzpos) );
+                    pathpt.pointRadius( Math.max(Math.min(Math.sqrt(Math.abs(tempflows[d.properties.country])) / 200, 36), 3)*Math.sqrt(newzpos) );
                 }
 
                 return pathpt(d);
@@ -597,8 +577,19 @@ function addoffset () {
 function getYearFlows(data) {
     // format the data
     let dataObj = {};
+    let obj = JSON.parse(JSON.stringify(data[0]));
+
+    delete obj['country'];
+    delete obj['Other South'];
+    delete obj['Other North'];
+    delete obj['Year'];
+    delete obj['Total'];
+
+    console.log({...obj});
+
     data.forEach(object => {
         let newObj = Object.assign({}, object);
+        let country = object.country;
 
         delete newObj['country'];
         delete newObj['Other South'];
@@ -614,6 +605,9 @@ function getYearFlows(data) {
                 delete newObj[key];
             } else {
                 newObj[key] = parseInt(value, 10);
+                console.log(country);
+
+                obj[key] = {...obj[key], [country]:parseInt(value, 10)}
             }
         }
 
@@ -624,12 +618,14 @@ function getYearFlows(data) {
         // console.log(sum);
 
         newObj[object.country] = sum;
+        obj[country] = {...obj, [country]:sum };
 
         // .map((a,b) => a + b);
         dataObj[object.country] = newObj;
     });
 
-    return dataObj;
+    console.log(obj);
+    return obj;
 }
 
 function getXToFromArrary(data) {
@@ -639,7 +635,10 @@ function getXToFromArrary(data) {
         let country = data[key];
 
         Object.keys(country).forEach(entry => {
-            arr.push([entry, key]);
+            if(key != entry) {
+                arr.push([entry, key]);
+            }
+            
         });
     }
 
@@ -670,6 +669,8 @@ function getStartArray(data) {
 }
 
 function getEndArray(data) {
+    console.log(data);
+
     let arr = [];
     
     // 
@@ -678,6 +679,9 @@ function getEndArray(data) {
 
         // get the coordinates
         let country = countryCoordinates.find(entry => entry.country == start);
+        if(!country) {
+            console.log(item);
+        }
 
         if(country) {
             let coord = [country.xcoord, country.ycoord];
@@ -687,37 +691,36 @@ function getEndArray(data) {
          
     });
 
-
     return arr;
 }
 
 function getCountArrar(data) {
     let arr = [];
 
-    let countries = Object.keys(data);
-    countries.forEach(country => {
-        let entry = data[country];
+    // let countries = Object.keys(data);
+    // countries.forEach(country => {
+    //     let entry = data[country];
 
-        arr.push(entry[country]);
-    });
-
-    // Object.values(data).forEach(entry => {
-    //     // count
-    //     for(let key in entry) {
-    //         let value = entry[key].toString().replaceAll(",", "");
-
-    //         arr.push(value);
-    //     }
+    //     arr.push(entry[country]);
     // });
 
-    console.log(arr);
-    let sorted = [...arr].sort((a, b) => a - b);
+    Object.values(data).forEach(entry => {
+        // count
+        for(let key in entry) {
+            let value = entry[key].toString().replaceAll(",", "");
 
-    let max = sorted[sorted.length - 1];
-    let min = sorted[0];
+            arr.push(value);
+        }
+    });
+
+    // console.log(arr);
+    // let sorted = [...arr].sort((a, b) => a - b);
+
+    // let max = sorted[sorted.length - 1];
+    // let min = sorted[0];
 
     arr = arr.map(value => {
-        return normalizeValue(value, max, min);
+        return normalizeValue(value);
     });
 
     return arr;
@@ -735,13 +738,9 @@ function getSpeedArray(data) {
     return arr;
 }
 
-function normalizeValue(value, max, min) {
-    value = value / 2000;
-    // console.log(value);
-
-    // value = value * 700 / (max - min) + 1;
-
-    return value < 1 ? 1 : Math.round(value);
+function normalizeValue(value) {
+    value = value / 5000;
+    return value <= 1 ? 1 : Math.round(value);
 }
 
 
@@ -757,7 +756,7 @@ function createCountryJson(xflows, countryCoordinates) {
             let values = flows[entry.country];
             net = values;
             
-            console.log(values);
+            // console.log(values);
 
             if(values[0]) {
                 net = values.reduce((a,b) => a + b);

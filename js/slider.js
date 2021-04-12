@@ -62,8 +62,8 @@ function filterActiveLayerByYear(year) {
 
   countryData = createCountryJson(xflows, countryCoordinates);
 
-  // cancelAnimationFrame(requestAnim);
-  //  d3.select("#renderer-container").classed("hidden", true);
+  cancelAnimationFrame(requestAnim);
+  d3.select("#renderer-container").classed("hidden", true);
   svg.classed("hidden", true);
 
   loadCircleMarker(countryData);
@@ -74,22 +74,25 @@ function filterActiveLayerByYear(year) {
   setTimeout(() => {
     svg.classed("hidden", false);
 
-    // if(container.classList.contains("d-none")) {
-    //   container.classList.remove("d-none");
-    //   selected = "0";
-    //   clicked = "0";
-    // }
+    if(container.classList.contains("hidden")) {
+      container.classList.remove("hidden");
+      selected = "0";
+      clicked = "0";
+    }
   }, 500);
 
   // // update the particle system
-  // var [startarr, endarr] = reprojectArray();
-  // var [startarr, endarr, speedarr] = negy(startarr, endarr, xspeedarr);
-  // mnum = startarr.length;
-  // cnttotal = getCountTotal(cntarr);
+  var [startarr, endarr] = reprojectArray();
+  xspeedarr = getSpeedArray(xflows);
 
-  // createParticleSystem();
+  var [startarr, endarr, speedarr] = negy(startarr, endarr, xspeedarr);
+  mnum = startarr.length;
+  cnttotal = getCountTotal(cntarr);
 
-  // requestAnimationFrame(update);
+  console.log(startarr.length);
+
+  createParticleSystem(startarr);
+  requestAnimationFrame(update);
 }
 
 // search Origin and destionation
@@ -215,6 +218,18 @@ function migrationByOrgnAndDest() {
     // hide the animation tab
     container.classList.add("d-none");
     // cancelAnimationFrame(requestAnim);
+
+    // zoom to the selected orgn and destination
+    if(origin != "all" && destination != "all") {
+      // get the bounding box
+      let fc = turf.featureCollection([originFeature, destinationFeature]);
+      let bbox = turf.bbox(fc);
+
+      map.fitBounds(bbox, {
+        padding:50
+      });
+
+    }
 }
 
 d3.select("#reset-view")

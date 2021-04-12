@@ -8,7 +8,7 @@ var map = new mapboxgl.Map({
 });
 
 map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-
+map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
 map.on("load", function(e) {
     map.addSource('countries',{
