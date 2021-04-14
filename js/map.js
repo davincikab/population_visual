@@ -13,7 +13,7 @@ map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 map.on("load", function(e) {
     map.addSource('countries',{
         "type":"geojson",
-        "data":"/data/country_data.geojson"
+        "data":"data/country_data.geojson"
     });
 
     map.addLayer({
