@@ -589,7 +589,7 @@ function displayPopup(year) {
     
     let divMarker = document.createElement("div");
     divMarker.classList.add("div-marker");
-    divMarker.innerHTML = "<img src='/images/flag.png' alt='"+ entry.Country+"' height='40px' width='40px'/>"
+    divMarker.innerHTML = "<img src='images/flag.png' alt='"+ entry.Country+"' height='40px' width='40px'/>"
 
     let marker = new mapboxgl.Marker({element:divMarker})
       .setLngLat([entry.lng, entry.lat])
@@ -620,7 +620,7 @@ function animateSlider() {
       index = 0;
     }
     
-  }, 10000);
+  }, 20000);
 }
 
 
