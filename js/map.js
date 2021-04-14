@@ -44,4 +44,12 @@ map.on("load", function(e) {
     map.on("click", function(e) {
         
     })
+
+    // animateSlider();
 });
+
+function resetMapView() {
+    map.setCenter([0,0]);
+    map.setZoom(1);
+
+}

@@ -217,7 +217,10 @@ function createParticleSystem(startarr) {
 
         scene = new THREE.Scene();
 
-        particles = new THREE.Geometry(),
+        particles = new THREE.Geometry();
+
+        console.log(particles.vertices);
+
         pMaterial = new THREE.ParticleBasicMaterial({
             //color: 0xFFDD00,
             size: 3,
@@ -229,10 +232,12 @@ function createParticleSystem(startarr) {
         });
 
         particles.vertices = [];
+       
         scene.removeChild(particleSystem);
         renderer.render(scene, camera);
 
         // cancelAnimationFrame(requestAnim);
+         console.log(startarr.length);
     }
 
     var tempcountarr = 0;
@@ -249,7 +254,7 @@ function createParticleSystem(startarr) {
                     new THREE.Vector3(pX, pY, pZ)
                 );
 
-
+            // let speed = 
             particle.velocity = new THREE.Vector3(
                 speedarr[p%mnum][0],
                 speedarr[p%mnum][1],
@@ -264,8 +269,11 @@ function createParticleSystem(startarr) {
             particle.ystart = pY;
             particle.xstart = pX;
             particle.agestart = particle.age;
-
-		    particles.vertices.push(particle);
+            
+            if(particle.velocity.x != 0 && particle.velocity.y != 0) {
+                particles.vertices.push(particle);
+            }
+		    
         }
     }
 
@@ -324,7 +332,7 @@ function update() {
 
             particle.age++;
         } 
-        else if (particle.from == selected || particle.to == selected) {
+        else if (particle.from == selected && particle.to == filterObject.destination) {
 
             if (particle.position.x > 600) {
                 particle.position.x = particle.xstart + xtrans;
@@ -337,8 +345,29 @@ function update() {
 
 
             particle.age++;
+        }
+        else if (particle.from !== selected && particle.to !== filterObject.destination) {
+            particle.position.x = 700;
+            particle.position.y = 380;
 
-        } else if (selected == "-2") {
+        }
+        else if (particle.from == selected || particle.to == selected) {
+
+            // console.log("selected");
+            if (particle.position.x > 600) {
+                particle.position.x = particle.xstart + xtrans;
+                particle.position.y = particle.ystart + ytrans;
+                particle.age = particle.agestart;
+            }
+
+            particle.position.addSelf(
+                    particle.velocity);
+
+
+            particle.age++;
+
+        } 
+        else if (selected == "-2") {
             particle.position.x = particle.xstart + xtrans;
             particle.position.y = particle.ystart + ytrans;
             particle.age = particle.agestart;
@@ -463,7 +492,7 @@ function click(dd, notransition) {
                 return 0.5;
             })
             .style("fill", function (d) {
-                if (d.properties.country !== dd.properties.country){
+                if (d.properties.country !== dd.properties.country) {
                     return "green";
                 } else {
                     console.log(d);

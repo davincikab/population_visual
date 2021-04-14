@@ -32,6 +32,8 @@ var sliderTime = d3
       let year = d3.timeFormat('%Y')(val) == 2020 ? 2019 : d3.timeFormat('%Y')(val);
 
       if(year != filterObject.activeYear) {
+        resetMapView();
+
         // call the filter function
         filterObject.activeYear = year;
 
@@ -104,6 +106,8 @@ function filterActiveLayerByYear(year) {
 // search Origin and destionation
 d3.select("#from")
   .on("change", function(e) {
+    e.stopPropagation();
+
     console.log(e);
     updateOriginDestionation(this, e.target.value);
   })
@@ -116,6 +120,8 @@ d3.select("#from")
 
 d3.select("#to")
   .on("change", function(e) {
+    e.stopPropagation();
+
     console.log(e);
     updateOriginDestionation(this, e.target.value);
   })
@@ -213,16 +219,22 @@ function migrationByOrgnAndDest() {
     
     // recreate the 
     if(originFeature) {
-      ddd = originFeature;
-      selected = origin;  
-      clicked = origin;
-      clickedCentroid = origin;
-      selected = origin;
+      console.log("Features");
+
+      // ddd = originFeature;
+      // selected = origin;  
+      // clicked = origin;
+      // clickedCentroid = origin;
+      // selected = origin;
+
+      updatecities();
+
+      click(originFeature);
     }
     
 
     // hide the animation tab
-    container.classList.add("d-none");
+    // container.classList.add("d-none");
     // cancelAnimationFrame(requestAnim);
 
     // zoom to the selected orgn and destination
@@ -232,7 +244,7 @@ function migrationByOrgnAndDest() {
       let bbox = turf.bbox(fc);
 
       map.fitBounds(bbox, {
-        padding:50
+        padding: {top: 50, bottom:55, left: 55, right:55}
       });
 
     }
@@ -594,3 +606,24 @@ function clearPopups() {
 }
 
 displayPopup(filterObject.activeYear);
+
+// Animation interval
+var animationInteval;
+function animateSlider() {
+  let index = 0;
+  animationInteval = setInterval(function(e) {
+    let value = dataTime[index];
+    sliderTime.value(value);
+    index++;
+
+    if(index >= 6) {
+      index = 0;
+    }
+    
+  }, 10000);
+}
+
+
+function cancelIntervalAnimation() {
+  clearInterval(animationInteval);
+}
