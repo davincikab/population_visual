@@ -8,7 +8,7 @@ var clicked = "0";
 var clickedCentroid = 0;
 var tempflows;
 var popup;
-var activeYear = 1990;
+var activeYear = 1995;
 var requestAnim;
 
 var particleSystem;
@@ -207,9 +207,13 @@ loadCircleMarker(countryData);
 function createParticleSystem(startarr) {
     
     if (particleSystem) {
-        while(scene.children.length > 0) { 
-            scene.removeChild(scene.children[0]); 
-        }
+        container.removeChild(renderer.domElement);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(WIDTH, HEIGHT);
+
+        container.append(renderer.domElement);
+        renderer.clear();
 
         scene = new THREE.Scene();
 
@@ -226,6 +230,8 @@ function createParticleSystem(startarr) {
 
         particles.vertices = [];
         scene.removeChild(particleSystem);
+        renderer.render(scene, camera);
+
         // cancelAnimationFrame(requestAnim);
     }
 
@@ -366,7 +372,7 @@ function update() {
     renderer.render(scene, camera);
 
     // set up the next call
-    requestAnim = requestAnimationFrame(update);   
+    requestAnimationFrame(update);   
 }
 
 requestAnim = requestAnimationFrame(update);
@@ -576,7 +582,6 @@ function addoffset () {
 
 function getYearFlows(data) {
     // format the data
-    let dataObj = {};
     let obj = JSON.parse(JSON.stringify(data[0]));
 
     delete obj['country'];
@@ -587,6 +592,12 @@ function getYearFlows(data) {
 
     console.log({...obj});
 
+    // clear the any data
+    for (const key in obj) {
+        obj[key] = {};
+    }
+
+    // add the rows
     data.forEach(object => {
         let newObj = Object.assign({}, object);
         let country = object.country;
@@ -602,29 +613,27 @@ function getYearFlows(data) {
             const value = newObj[key].toString().replaceAll(",", "");
 
             if(!parseInt(value, 10)) { 
-                delete newObj[key];
+               
             } else {
-                newObj[key] = parseInt(value, 10);
-                console.log(country);
+                let intValue = parseInt(value, 10);
+                obj[key] = {...obj[key], [country]:intValue }
 
-                obj[key] = {...obj[key], [country]:parseInt(value, 10)}
+                // console.log( obj[key]);
             }
         }
 
-        // add the country totals
-        let values = Object.values(newObj);
-
-        let sum = values.length > 1 ? values.reduce((a,b) => a + b) : 0;
-        // console.log(sum);
-
-        newObj[object.country] = sum;
-        obj[country] = {...obj, [country]:sum };
-
-        // .map((a,b) => a + b);
-        dataObj[object.country] = newObj;
     });
 
-    console.log(obj);
+    for (const key in obj) {
+        const element = obj[key];
+
+        let values = Object.values(element);
+        let sum = values.length > 1 ? values.reduce((a,b) => a + b) : 0;
+
+        element[key] = sum;
+    }
+
+    // console.log(obj);
     return obj;
 }
 
@@ -635,9 +644,9 @@ function getXToFromArrary(data) {
         let country = data[key];
 
         Object.keys(country).forEach(entry => {
-            if(key != entry) {
+            // if(key != entry) {
                 arr.push([entry, key]);
-            }
+            // }
             
         });
     }
@@ -669,7 +678,7 @@ function getStartArray(data) {
 }
 
 function getEndArray(data) {
-    console.log(data);
+    // console.log(data);
 
     let arr = [];
     
@@ -726,11 +735,13 @@ function getCountArrar(data) {
     return arr;
 }
 
-function getSpeedArray(data) {
+function getSpeedArray(tofromArrData) {
     let arr = [];
     
+    console.log(tofromArrData);
+
     // 
-    data.forEach(item => {
+    tofromArrData.forEach(item => {
         let coord = [0, 0];
         arr.push(coord);
     });

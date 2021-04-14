@@ -63,7 +63,13 @@ canvas {
 }
 
 .popup-content .description {
-    padding: 10px 10px 15px
+    padding: 10px 10px 15px;
+    font-size:14px;
+}
+
+.div-marker {
+    z-index: 2;
+    cursor: pointer;
 }
 
 /* particle system container */
@@ -148,6 +154,7 @@ canvas {
     background-color: rgba(255, 255, 255, 0.836);
     display: flex;
     justify-content: flex-start;
+    z-index: 2;
     padding: 0.375rem 0.5rem;
 }
 
