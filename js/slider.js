@@ -9,24 +9,34 @@ var filterObject = {
   region:"Africa"
 };
 
+var sliderYear = {
+  1990:{index:0},
+  1995:{index:1},
+  2000:{index:2},
+  2005:{index:3},
+  2010:{index:4},
+  2015:{index:5},
+  2019:{index:6},
+};
+
 var originInput = document.getElementById("from");
 
 var activeFilter = "";
 
 var dataTime = d3.range(0, 35, 5).map(function(d) {
-    if(d == 30) return new Date(2019, 1, 1);
+  if(d == 30) return new Date(2019, 1, 1);
 
-    return new Date(1990 + d, 1, 1);
+  return new Date(1990 + d, 1, 1);
 });
 
 var sliderTime = d3
-    .sliderBottom()
-    .min(d3.min(dataTime))
-    .max(d3.max(dataTime))
-    .step(1000 * 60 * 60 * 24 * 365 * 5)
-    .width(300)
-    .tickFormat(d3.timeFormat('%Y'))
-    .tickValues(dataTime)
+  .sliderBottom()
+  .min(d3.min(dataTime))
+  .max(d3.max(dataTime))
+  .step(1000 * 60 * 60 * 24 * 365 * 5)
+  .width(300)
+  .tickFormat(d3.timeFormat('%Y'))
+  .tickValues(dataTime)
     .default(new Date(1990, 1, 1))
     .on('onchange', val => {
       let year = d3.timeFormat('%Y')(val) == 2020 ? 2019 : d3.timeFormat('%Y')(val);
@@ -48,7 +58,7 @@ var gTime = d3
     .select('div#slider-time')
     .append('svg')
     .attr('width', 400)
-    .attr('height', 100)
+    .attr('height', 50)
     .append('g')
     .attr('transform', 'translate(30,30)');
 
@@ -614,9 +624,10 @@ function animateSlider() {
   animationInteval = setInterval(function(e) {
     let value = dataTime[index];
     sliderTime.value(value);
-    index++;
+     index++;
 
-    if(index >= 6) {
+    if(index >= 7) {
+      cancelIntervalAnimation();    
       index = 0;
     }
     

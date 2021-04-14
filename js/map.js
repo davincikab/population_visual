@@ -7,7 +7,7 @@ var map = new mapboxgl.Map({
     maxZoom:4.5
 });
 
-map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+map.addControl(new mapboxgl.NavigationControl(), 'top-right');
 map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
 map.on("load", function(e) {
@@ -45,7 +45,7 @@ map.on("load", function(e) {
         
     })
 
-    animateSlider();
+    // animateSlider();
 });
 
 function resetMapView() {
