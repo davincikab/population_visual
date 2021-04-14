@@ -535,7 +535,7 @@ function showPopover(e) {
     if(clicked == "0" || d.properties.country == clickedCentroid) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
-        "<div class='description' >Net Migration: " + d3.format(",.2r")(d.properties.net) + "</div>"
+        "<div class='description' >Total Migration Outflows: " + d3.format(",.2r")(d.properties.net) + "</div>"
         "</div>";
 
         popup
@@ -545,7 +545,7 @@ function showPopover(e) {
     } else if (tempflows[d.properties.country]) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + d.properties.country +" to "+ clicked+"</strong></div>" +
-        "<div class='description' >Net Migration: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
+        "<div class='description' >Total Migration Outflows: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
         "</div>";
 
         popup

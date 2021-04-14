@@ -70,7 +70,7 @@ The selection panel and the map are part of the same UI, hence they will always 
 The data provided contains total migration stocks from one destination to another.
 
 ### What does each moving yellow dot mean? how many people.
-A single dot represent 2000 people travelling from the given origin to various destination
+A single dot represent 5000 people travelling from the given origin to various destination
 
 ### If the data was changed, how?
 This will require data preprocessing to fit the data format required in the application.
