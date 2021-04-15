@@ -646,6 +646,8 @@ function animateSlider() {
     if(index >= 31) {
       cancelIntervalAnimation();    
       index = 0;
+
+      sliderValue.value(new Date(1990, 1, 1));
     }
     
   }, 5000);
@@ -654,4 +656,28 @@ function animateSlider() {
 
 function cancelIntervalAnimation() {
   clearInterval(animationInteval);
+}
+
+var playButton = document.getElementById("play-btn");
+playButton.addEventListener("click", function(e) {
+  playOrPause();
+});
+
+var isAnimating = true;
+function playOrPause() {
+  // play or paue the animation
+
+  if(isAnimating) {
+    isAnimating = !isAnimating;
+    cancelIntervalAnimation();
+
+    // change the inner content
+    playButton.innerHTML = '<i class="fa fa-play"></i>';
+  } else {
+    isAnimating = true;
+    animateSlider();
+
+    playButton.innerHTML = '<i class="fa fa-pause"></i>';
+  }
+
 }

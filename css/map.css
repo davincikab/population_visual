@@ -169,3 +169,21 @@ canvas {
 .hidden, .d-none {
     display: none !important;
 }
+
+.header-section {
+    padding:0.4em 0.2em;
+    font-size: 0.8em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.header-section .play-btn {
+    cursor: pointer;
+}
+
+.header-section p {
+    margin: 0;
+}
