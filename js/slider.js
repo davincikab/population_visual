@@ -41,6 +41,7 @@ var sliderTime = d3
   .on("drag", function(e) {
     console.log(e);
     cancelIntervalAnimation();
+    index = 0;
   })
   .on('onchange', val => {
       let year = d3.timeFormat('%Y')(val) == 2020 ? 2019 : d3.timeFormat('%Y')(val);
@@ -630,6 +631,7 @@ displayPopup(filterObject.activeYear);
 
 // Animation interval
 var animationInteval;
+var index = 0;
 var animateTime = d3.range(0, 31, 1).map(function(d) {
   if(d == 30) return new Date(2019, 1, 1);
 
@@ -637,7 +639,6 @@ var animateTime = d3.range(0, 31, 1).map(function(d) {
 });
 
 function animateSlider() {
-  let index = 0;
   animationInteval = setInterval(function(e) {
     let value = animateTime[index];
     sliderTime.value(value);
