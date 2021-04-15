@@ -263,8 +263,8 @@ function createParticleSystem(startarr) {
             particle.startpt = [startpoint[0],startpoint[1]];
             particle.age = Math.round(maxage*q/cntarr[p]);
 
-            particle.from = xtofromarr[p][0];
-            particle.to = xtofromarr[p][1];
+            particle.from = xtofromarr[p][1];
+            particle.to = xtofromarr[p][0];
 
             particle.ystart = pY;
             particle.xstart = pX;
@@ -273,6 +273,11 @@ function createParticleSystem(startarr) {
             if(particle.velocity.x != 0 && particle.velocity.y != 0) {
                 particles.vertices.push(particle);
             }
+            else if(particle.from != particle.to) {
+                particles.vertices.push(particle);
+            }
+
+            
 		    
         }
     }
@@ -332,41 +337,53 @@ function update() {
 
             particle.age++;
         } 
-        else if (particle.from == selected && particle.to == filterObject.destination) {
+        else if(filterObject.origin != "all" && filterObject.destination != "all") {
+            if (particle.from == filterObject.origin && particle.to == filterObject.destination) {
 
-            if (particle.position.x > 600) {
-                particle.position.x = particle.xstart + xtrans;
-                particle.position.y = particle.ystart + ytrans;
-                particle.age = particle.agestart;
+                if (particle.position.x > 600) {
+                    particle.position.x = particle.xstart + xtrans;
+                    particle.position.y = particle.ystart + ytrans;
+                    particle.age = particle.agestart;
+                }
+
+                particle.position.addSelf(
+                        particle.velocity);
+
+
+                particle.age++;
             }
-
-            particle.position.addSelf(
-                    particle.velocity);
-
-
-            particle.age++;
-        }
-        else if (particle.from !== selected && particle.to !== filterObject.destination) {
-            particle.position.x = 700;
-            particle.position.y = 380;
-
-        }
-        else if (particle.from == selected || particle.to == selected) {
-
-            // console.log("selected");
-            if (particle.position.x > 600) {
-                particle.position.x = particle.xstart + xtrans;
-                particle.position.y = particle.ystart + ytrans;
-                particle.age = particle.agestart;
+            else { 
+            // if (particle.from !== selected && particle.to !== filterObject.destination) {
+                particle.position.x = 700;
+                particle.position.y = 380;
+    
             }
+        } else if(filterObject.destination == "all" && filterObject.origin != "all") {
+            // console.log("Filtering");
 
-            particle.position.addSelf(
-                    particle.velocity);
+            if (particle.from == selected) {
+
+                // console.log("selected");
+                if (particle.position.x > 600) {
+                    particle.position.x = particle.xstart + xtrans;
+                    particle.position.y = particle.ystart + ytrans;
+                    particle.age = particle.agestart;
+                }
+
+                particle.position.addSelf(
+                        particle.velocity);
 
 
-            particle.age++;
+                particle.age++;
 
-        } 
+            } 
+            else {
+            // if (particle.from !== selected && particle.to !== selected) {
+                particle.position.x = 700;
+                particle.position.y = 380;
+    
+            }
+        }   
         else if (selected == "-2") {
             particle.position.x = particle.xstart + xtrans;
             particle.position.y = particle.ystart + ytrans;
@@ -411,6 +428,7 @@ function updatecities() {
     var zoomchg = (map.getZoom() - 1) * 10;
     newzpos = Math.pow(1.0717735, zoomchg);
 
+    console.log("Selected: " + selected);
     if (selected == "0") {
         countryCentroids
             .attr("d", function(d){
@@ -436,35 +454,14 @@ function updatecities() {
     addoffset = "-1";
 }
 
-// function mouseout() {
-//     clicked = "0";
-//     clickedcbsa = 0;
-
-//     selected = "-1";
-
-//     centroidLabels.style("opacity",0);
-
-//     countryCentroids.transition()
-//         .attr("d", function(d){
-
-//             pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 90, 36), 3)*Math.sqrt(newzpos) );
-//             return pathpt(d);
-//         })
-//         .style("fill", function (d) {
-//             return "rgb(20,20,180)";
-//         })
-//         .style("opacity", function (d) {
-//             console.log(Math.min(d.properties.abs, 1000));
-//             return ((Math.min(d.properties.abs, 1000) / 1000) * 0.6 + 0.3);
-//         })
-//         .style("stroke-width",0.5);
-// }
-
+// Click events
 function click(dd, notransition) {
     ddd = dd;
     clicked = dd.properties.country;
     clickedCentroid = dd.properties.country;
     selected = dd.properties.country;
+
+    filterObject.origin = selected;
 
     console.log("click");
     console.log(dd);
@@ -525,6 +522,7 @@ function click(dd, notransition) {
     removePopovers();
 }
 
+// show popover
 function showPopover(e) {
     let d = e.target.__data__;
 
@@ -544,7 +542,7 @@ function showPopover(e) {
 
     } else if (tempflows[d.properties.country]) {
         var popupContent = "<div class='popup-content'>" + 
-        "<div class='popup-title'><strong>" + d.properties.country +" to "+ clicked+"</strong></div>" +
+        "<div class='popup-title'><strong>" + clicked +" to "+ d.properties.country +"</strong></div>" +
         "<div class='description' >Total Migration Outflows: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
         "</div>";
 
@@ -581,12 +579,25 @@ function mouseout () {
 
     selected = "0";
 
+    // update filter object
+    filterObject.origin = filterObject.destination = "all";
+
+    // update the to and from values
+    document.getElementById("from").value = "all";
+    document.getElementById("to").value = "all";
+
+    // update centroid values
+    countryData = createCountryJson(xflows, countryCoordinates);
+    loadCircleMarker(countryData);
+
+    // hide the label
     centroidLabels.style("opacity",0);
 
+    // reset the circle radius
     countryCentroids.transition()
             .attr("d", function(d){
 
-                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 90,36),2)*Math.sqrt(newzpos) );
+                pathpt.pointRadius( Math.max(Math.min(Math.sqrt(d.properties.abs) / 200,36),2)*Math.sqrt(newzpos) );
                 return pathpt(d);
             })
             .style("fill", function (d) {
@@ -598,6 +609,7 @@ function mouseout () {
             })
             .style("stroke-width",0.5);
 
+    updatecities();
 }
 
 function addoffset () {

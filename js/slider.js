@@ -33,15 +33,24 @@ var sliderTime = d3
   .sliderBottom()
   .min(d3.min(dataTime))
   .max(d3.max(dataTime))
-  .step(1000 * 60 * 60 * 24 * 365 * 5)
-  .width(300)
+  // .step(1000 * 60 * 60 * 24 * 365 * 1)
+  .width(800)
   .tickFormat(d3.timeFormat('%Y'))
   .tickValues(dataTime)
-    .default(new Date(1990, 1, 1))
-    .on('onchange', val => {
+  .default(new Date(1990, 1, 1))
+  .on("drag", function(e) {
+    console.log(e);
+    cancelIntervalAnimation();
+  })
+  .on('onchange', val => {
       let year = d3.timeFormat('%Y')(val) == 2020 ? 2019 : d3.timeFormat('%Y')(val);
 
       if(year != filterObject.activeYear) {
+        if(!sliderYear[year]) {
+          displayPopup(year);
+          return;
+        }
+
         resetMapView();
 
         // call the filter function
@@ -49,7 +58,7 @@ var sliderTime = d3
 
         console.log(year);
         filterActiveLayerByYear(year);
-        displayPopup(year);
+        displayPopup();
       }
       
     });
@@ -57,8 +66,8 @@ var sliderTime = d3
 var gTime = d3
     .select('div#slider-time')
     .append('svg')
-    .attr('width', 400)
-    .attr('height', 50)
+    .attr('width', 900)
+    .attr('height', 70)
     .append('g')
     .attr('transform', 'translate(30,30)');
 
@@ -114,7 +123,8 @@ function filterActiveLayerByYear(year) {
 }
 
 // search Origin and destionation
-d3.select("#from")
+var fromInput = d3.select("#from");
+fromInput
   .on("change", function(e) {
     e.stopPropagation();
 
@@ -128,7 +138,8 @@ d3.select("#from")
   .attr('value', function(d) { return d; })
   .text(function(d){ return d});
 
-d3.select("#to")
+var toInput = d3.select("#to");
+toInput
   .on("change", function(e) {
     e.stopPropagation();
 
@@ -158,8 +169,8 @@ function migrationByOrgnAndDest() {
   xflows = orign_destionation[filterObject.activeYear];
   xflows = getYearFlows(xflows);
 
-  console.log("Filtering");
-  console.log(filterObject);
+  // console.log("Filtering");
+  // console.log(filterObject);
 
   clicked = "0";
   clickedcbsa = 0;
@@ -575,7 +586,7 @@ function displayPopup(year) {
   let previousYear =  year - 5;
 
   // get the active data
-  let data = popupData.filter(entry => entry.Year <= year && entry.Year >= previousYear);
+  let data = popupData.filter(entry => entry.Year == year);
 
   console.log(data);
 
@@ -619,19 +630,25 @@ displayPopup(filterObject.activeYear);
 
 // Animation interval
 var animationInteval;
+var animateTime = d3.range(0, 31, 1).map(function(d) {
+  if(d == 30) return new Date(2019, 1, 1);
+
+  return new Date(1990 + d, 1, 1);
+});
+
 function animateSlider() {
   let index = 0;
   animationInteval = setInterval(function(e) {
-    let value = dataTime[index];
+    let value = animateTime[index];
     sliderTime.value(value);
      index++;
 
-    if(index >= 7) {
+    if(index >= 31) {
       cancelIntervalAnimation();    
       index = 0;
     }
     
-  }, 20000);
+  }, 5000);
 }
 
 
