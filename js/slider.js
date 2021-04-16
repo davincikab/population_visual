@@ -697,7 +697,7 @@ function animateSlider() {
       sliderValue.value(new Date(1990, 1, 1));
     }
     
-  }, 5000);
+  }, 15000);
 }
 
 
