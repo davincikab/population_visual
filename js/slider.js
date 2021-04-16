@@ -34,21 +34,49 @@ var sliderTime = d3
   .min(d3.min(dataTime))
   .max(d3.max(dataTime))
   // .step(1000 * 60 * 60 * 24 * 365 * 1)
-  .width(800)
+  .width(700)
   .tickFormat(d3.timeFormat('%Y'))
   .tickValues(dataTime)
   .default(new Date(1990, 1, 1))
-  .on("drag", function(e) {
-    console.log(e);
-    cancelIntervalAnimation();
-    index = 0;
+  .fill("red")
+  .on("end", val => {
+    console.log("End Event");
+
+      // get the year and update the index
+      let years = animateTime.map(n => d3.timeFormat('%Y')(n));
+      let timeframe = years.find(value =>  value == d3.timeFormat('%Y')(val) );
+  
+      console.log(timeframe);
+
+      // update the index
+      let indexx = years.indexOf(timeframe);
+      index = indexx + 1;
+
+      console.log(index);
+      // cancel animation
+      cancelIntervalAnimation();
+
+      // change the icons
+      playOrPause();
+
+      mouseout();
+
   })
   .on('onchange', val => {
-      let year = d3.timeFormat('%Y')(val) == 2020 ? 2019 : d3.timeFormat('%Y')(val);
+    // get the index
+    console.log(d3.timeFormat('%Y')(val));
+    // index = animateTime.indexOf(val);
+
+    let year = d3.timeFormat('%Y')(val) == 2020 ? 2019 : d3.timeFormat('%Y')(val);
 
       if(year != filterObject.activeYear) {
         if(!sliderYear[year]) {
           displayPopup(year);
+
+          if(selected || filterObject.destination != "all") {
+            mouseout();
+          }
+         
           return;
         }
 
@@ -67,7 +95,7 @@ var sliderTime = d3
 var gTime = d3
     .select('div#slider-time')
     .append('svg')
-    .attr('width', 900)
+    .attr('width', "80vw")
     .attr('height', 70)
     .append('g')
     .attr('transform', 'translate(30,30)');
@@ -265,15 +293,15 @@ function migrationByOrgnAndDest() {
       let fc = turf.featureCollection([originFeature, destinationFeature]);
       let bbox = turf.bbox(fc);
 
-      map.fitBounds(bbox, {
-        padding: {top: 50, bottom:55, left: 55, right:55}
-      });
+      // map.fitBounds(bbox, {
+      //   padding: {top: 50, bottom:55, left: 55, right:55}
+      // });
 
     }
 }
 
-d3.select("#reset-view")
-  .on("click", resetView);
+// d3.select("#reset-view")
+//   .on("click", resetView);
   
 function resetView(e) {
   window.location.reload();
@@ -580,6 +608,7 @@ var popupData = [
 ];
 
 var activePopups = [];
+var popupEventsDiv = document.getElementById("popup-events");
 function displayPopup(year) {
   // remove the data layers
   clearPopups();
@@ -611,7 +640,7 @@ function displayPopup(year) {
     
     let divMarker = document.createElement("div");
     divMarker.classList.add("div-marker");
-    divMarker.innerHTML = "<img src='images/flag.png' alt='"+ entry.Country+"' height='40px' width='40px'/>"
+    divMarker.innerHTML = "<img src='images/flag.png' alt='"+ entry.Country+"' height='30px' width='25px'/>"
 
     let marker = new mapboxgl.Marker({element:divMarker})
       .setLngLat([entry.lng, entry.lat])
@@ -621,10 +650,25 @@ function displayPopup(year) {
       activePopups.push(marker);
   });
 
+  // update the popup events
+  data.forEach(entry => {
+    let content = "<div class='popup-event'>"+
+    "<div class='title'>" + entry.Title+ "</div>"+
+    "<div class='description'>" +
+    "<div class='d-flex'><strong>Year: </strong>" + entry.Year + "</div>"+
+    "<div class='d-flex'><strong>Country: </strong>" + entry.Country + "</div>"+
+      entry.Text + 
+    "</div>"+
+    "</div>";
+
+    popupEventsDiv.innerHTML += content;
+  });
+
 }
 
 function clearPopups() {
   activePopups.forEach(popup => popup.remove());
+  popupEventsDiv.innerHTML = "";
 }
 
 displayPopup(filterObject.activeYear);
@@ -632,7 +676,7 @@ displayPopup(filterObject.activeYear);
 // Animation interval
 var animationInteval;
 var index = 0;
-var animateTime = d3.range(0, 31, 1).map(function(d) {
+var animateTime = d3.range(0, 30, 1).map(function(d) {
   if(d == 30) return new Date(2019, 1, 1);
 
   return new Date(1990 + d, 1, 1);
@@ -640,12 +684,14 @@ var animateTime = d3.range(0, 31, 1).map(function(d) {
 
 function animateSlider() {
   animationInteval = setInterval(function(e) {
+    console.log(index);
+
     let value = animateTime[index];
     sliderTime.value(value);
-     index++;
+    index++;
 
-    if(index >= 31) {
-      cancelIntervalAnimation();    
+    if(index >= 30) {
+      // cancelIntervalAnimation();    
       index = 0;
 
       sliderValue.value(new Date(1990, 1, 1));

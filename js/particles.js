@@ -1,4 +1,4 @@
-var WIDTH = 1368, HEIGHT=850;
+var WIDTH = document.body.clientWidth, HEIGHT=document.body.clientHeight;
 var selected = "0";
 var cnttotal = 0;
 var selected = "0";
@@ -37,7 +37,7 @@ var scene = new THREE.Scene();
 
 var newzpos = Math.pow(1.0717735,4);
 
-camera.position.z = 425; //newzpos;
+camera.position.z = HEIGHT / 2; //newzpos;
 renderer.setSize(WIDTH, HEIGHT);
 container.append(renderer.domElement);
 
@@ -207,6 +207,7 @@ loadCircleMarker(countryData);
 function createParticleSystem(startarr) {
     
     if (particleSystem) {
+        maxage = 500;
         container.removeChild(renderer.domElement);
 
         renderer = new THREE.WebGLRenderer();
@@ -261,7 +262,7 @@ function createParticleSystem(startarr) {
                 0);	
 
             particle.startpt = [startpoint[0],startpoint[1]];
-            particle.age = Math.round(maxage*q/cntarr[p]);
+            particle.age = Math.round(maxage * q / cntarr[p]);
 
             particle.from = xtofromarr[p][1];
             particle.to = xtofromarr[p][0];
@@ -447,7 +448,7 @@ function updatecities() {
 
     var centerchg = [[map.getCenter().lng, map.getCenter().lat]].map(projectionr);
 
-    camera.position.z = 425 / newzpos;
+    camera.position.z = (HEIGHT / 2) / newzpos;
 
     ytrans = centerchg[0][1];
     xtrans = -centerchg[0][0];

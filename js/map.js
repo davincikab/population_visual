@@ -4,7 +4,7 @@ var map = new mapboxgl.Map({
     style: 'mapbox://styles/daudi97/ckn046q8i0s4q17pbybv7566b', // style URL
     center: [0,0], // starting position [lng, lat]
     zoom: 1,// starting zoom
-    maxZoom:4.5
+    maxZoom:2.5
 });
 
 map.addControl(
@@ -14,7 +14,6 @@ map.addControl(
     'top-right'
 );
 
-map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
 map.on("load", function(e) {
     map.addSource('countries',{
@@ -56,7 +55,7 @@ map.on("load", function(e) {
 
 
 class RefreshControl {
-    refreshPage() {
+    static refreshPage() {
         window.location.reload();
     }
 
@@ -67,7 +66,7 @@ class RefreshControl {
         this._container.innerHTML = '<i class="fa fa-refresh"></i>';
 
         this._container.onclick = function(e) {
-            this.refreshPage();
+            RefreshControl.refreshPage();
         }
         
         return this._container;
@@ -81,6 +80,72 @@ class RefreshControl {
 
 map.addControl(new RefreshControl(), 'top-right');
 
+
+
+class FullScreenControl {
+    static renderFullScreen() {
+        // get the body
+        var body = window.document.querySelector("body");
+
+        if(window.document.fullscreenEnabled) {
+            console.log("Enabled");
+
+            if(!window.document.fullscreenElement) {
+                 // render the element to full s
+                body.requestFullscreen().then(() => {
+                    resetMapView();
+
+                    WIDTH = document.body.clientWidth, HEIGHT=document.body.clientHeight;
+                    renderer.setSize(WIDTH, HEIGHT, false);
+                    camera.updateProjectionMatrix();
+
+                    // createParticleSystem(startarr); 
+                    // filterActiveLayerByYear(filterObject.activeYear);
+                    console.log("Entering Full screen Mode");
+                });
+               
+
+            } else {
+                window.document
+                    .exitFullscreen()
+                    .then(() => {
+
+                        resetMapView();
+                        WIDTH = document.body.clientWidth, HEIGHT=document.body.clientHeight;
+                        renderer.setSize(WIDTH, HEIGHT, false);
+                        camera.updateProjectionMatrix();
+
+                        // createParticleSystem(startarr);
+                        // filterActiveLayerByYear(filterObject.activeYear);
+                        console.log("Exit Full screen Mode");
+                    });
+                
+            }
+           
+        }
+    }
+
+    onAdd(map) {
+        this._map = map;
+        this._container = document.createElement('div');
+        this._container.className = 'mapboxgl-ctrl reset-view';
+        this._container.innerHTML = '<i class="fa fa-arrows-alt"></i>';
+
+        this._container.onclick = function(e) {
+            FullScreenControl.renderFullScreen();
+        }
+
+        
+        return this._container;
+    }
+
+    onRemove() {
+        this._container.parentNode.removeChild(this._container);
+        this._map = undefined;
+    }
+}
+
+map.addControl(new FullScreenControl(), 'top-right');
 function resetMapView() {
     map.setCenter([0,0]);
     map.setZoom(1);
