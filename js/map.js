@@ -50,7 +50,7 @@ map.on("load", function(e) {
         
     })
 
-    animateSlider();
+    // animateSlider();
 });
 
 
@@ -84,6 +84,9 @@ map.addControl(new RefreshControl(), 'top-right');
 
 class FullScreenControl {
     static renderFullScreen() {
+        // hide the renderer container
+        container.classList.add("hidden");
+
         // get the body
         var body = window.document.querySelector("body");
 
@@ -93,15 +96,24 @@ class FullScreenControl {
             if(!window.document.fullscreenElement) {
                  // render the element to full s
                 body.requestFullscreen().then(() => {
-                    resetMapView();
+                    // resetMapView();
 
-                    WIDTH = document.body.clientWidth, HEIGHT=document.body.clientHeight;
-                    renderer.setSize(WIDTH, HEIGHT, false);
-                    camera.updateProjectionMatrix();
+                    // WIDTH = document.body.clientWidth, HEIGHT=document.body.clientHeight;
+                    // renderer.setSize(WIDTH, HEIGHT, false);
+                    // camera.updateProjectionMatrix();
 
                     // createParticleSystem(startarr); 
-                    // filterActiveLayerByYear(filterObject.activeYear);
                     console.log("Entering Full screen Mode");
+                    
+                    setTimeout(() => {
+                        svg.classed("hidden", false);
+                    
+                        if(container.classList.contains("hidden")) {
+                          container.classList.remove("hidden");
+                        }
+
+                        filterActiveLayerByYear(filterObject.activeYear);
+                      }, 500);
                 });
                
 
@@ -110,14 +122,24 @@ class FullScreenControl {
                     .exitFullscreen()
                     .then(() => {
 
-                        resetMapView();
-                        WIDTH = document.body.clientWidth, HEIGHT=document.body.clientHeight;
-                        renderer.setSize(WIDTH, HEIGHT, false);
-                        camera.updateProjectionMatrix();
+                        // resetMapView();
+                        // WIDTH = document.body.clientWidth, HEIGHT=document.body.clientHeight;
+                        // renderer.setSize(WIDTH, HEIGHT, false);
+                        // camera.updateProjectionMatrix();
 
                         // createParticleSystem(startarr);
                         // filterActiveLayerByYear(filterObject.activeYear);
                         console.log("Exit Full screen Mode");
+
+                        setTimeout(() => {
+                            svg.classed("hidden", false);
+                        
+                            if(container.classList.contains("hidden")) {
+                              container.classList.remove("hidden");
+                            }
+    
+                            filterActiveLayerByYear(filterObject.activeYear);
+                          }, 500);
                     });
                 
             }

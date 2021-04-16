@@ -9,6 +9,7 @@ body {
     padding: 0;
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
 }
 
 .container-fluid {
@@ -43,9 +44,12 @@ canvas {
 
 /* map styling */
 #map {
+    top:0;
+    left: 0;
+    right: 0;
     position:absolute; 
-    width:100%; 
-    height:100%;
+    width:100vw; 
+    height:100vh;
     /* width: 1200px; */
     /* background-color: black; */
 }
@@ -80,8 +84,8 @@ canvas {
 
 /* particle system container */
 #renderer-container {
-    height: 850px;
-    width: 1368px;
+    height: 100vh;
+    width: 100vw;
     background-color: transparent;
 }
 
