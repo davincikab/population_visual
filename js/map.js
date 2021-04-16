@@ -7,7 +7,13 @@ var map = new mapboxgl.Map({
     maxZoom:4.5
 });
 
-map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+map.addControl(
+    new mapboxgl.NavigationControl({
+        showCompass:false
+    }), 
+    'top-right'
+);
+
 map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
 
 map.on("load", function(e) {
@@ -47,6 +53,33 @@ map.on("load", function(e) {
 
     animateSlider();
 });
+
+
+class RefreshControl {
+    refreshPage() {
+        window.location.reload();
+    }
+
+    onAdd(map) {
+        this._map = map;
+        this._container = document.createElement('div');
+        this._container.className = 'mapboxgl-ctrl reset-view';
+        this._container.innerHTML = '<i class="fa fa-refresh"></i>';
+
+        this._container.onclick = function(e) {
+            this.refreshPage();
+        }
+        
+        return this._container;
+    }
+
+    onRemove() {
+        this._container.parentNode.removeChild(this._container);
+        this._map = undefined;
+    }
+}
+
+map.addControl(new RefreshControl(), 'top-right');
 
 function resetMapView() {
     map.setCenter([0,0]);
