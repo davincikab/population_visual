@@ -519,7 +519,8 @@ function click(dd, notransition) {
         .transition()
         .style("opacity", 0);
 
-
+    playOrPause();
+    clearPopups();
     removePopovers();
 }
 
