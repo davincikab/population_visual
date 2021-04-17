@@ -1,6 +1,11 @@
 :root {
     --primary:#148812;
+    --gray:#ddd;
     --white:#fff;
+    --transparent-white: rgba(255, 255, 255, 0.46);
+    --transparent-black:rgb(0, 0, 0, 46%);
+    --blue:blue;
+    --green:green;
     --black:#000;
 }
 
@@ -36,8 +41,8 @@ canvas {
 }
 
 .reset-view {
-    background-color: #000;
-    color:white;
+    background-color: var(--black);
+    color:var(--white);
     padding: 0.4em 0.8em;
     border-radius: 4px;
     cursor: pointer;
@@ -51,18 +56,16 @@ canvas {
     position:absolute; 
     width:100vw; 
     height:100vh;
-    /* width: 1200px; */
-    /* background-color: black; */
 }
 
 .mapboxgl-ctrl-group {
     border-radius: 4px;
-    background: #000 !important;
+    background: var(--black) !important;
 }
 
 .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon {
     background-image: none !important;
-    color:white;
+    color:var(--white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,7 +73,7 @@ canvas {
 
 .mapboxgl-ctrl button.mapboxgl-ctrl-zoom-out .mapboxgl-ctrl-icon {
     background-image: none !important;
-    color:white;
+    color:var(--white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -90,7 +93,7 @@ canvas {
 }
 
 .popup-content .popup-title {
-    background-color: #ddd;
+    background-color:var(--gray);
     padding: 3px 10px 3px 4px;
 }
 
@@ -126,16 +129,16 @@ canvas {
 
 .filter-panel select {
     border-radius: 2px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--gray);
     padding:0.3em 0.5em;
 }
 
 .country-filter {
     display: flex;
-    color:white;
+    color:var(--white);
     flex-direction: column;
     justify-content: space-around;
-    background-color: rgba(255, 255, 255, 0.46);
+    background-color:var(--transparent-black);
     padding:0.5rem 0.25rem;
 }
 
@@ -155,9 +158,9 @@ canvas {
 }
 
 .popup-event {
-    color:white;
+    color:var(--white);
     margin-bottom: 0.5em;
-    background-color: rgba(255, 255, 255, 0.46);
+    background-color:var(--transparent-black);
     padding:0.2em 0.1em;
 }
 
@@ -170,19 +173,19 @@ canvas {
     top: 16%;
     left: 2%;
     right: 2%;
-    box-shadow: 2px 2px 0.5em black;
+    box-shadow: 2px 2px 0.5em var(--black);
 }
 
 #suggestions .list-group-item:hover {
-    background-color:blue;
-    color:white;
+    background-color:var(--blue);
+    color:var(--white);
 }
 
 .year-filter {
     position: absolute;
     top: 2%;
     right: 4%;
-    background-color: var(--white);
+    background-color:var(--white);
     padding: 0.25rem 0.5rem;
     display: flex;
     justify-content: space-between;
@@ -202,7 +205,7 @@ canvas {
     left: 5%;
     width: auto;
     height: 100px;
-    background-color: rgba(255, 255, 255, 0.46);
+    background-color: var(--transparent-black);
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -216,11 +219,11 @@ canvas {
 }
 
 .axis text {
-    fill:white;
+    fill:var(--white);
 }
 
 .slider text {
-    fill: blue;
+    fill: var(--blue);
 }
 
 .animate-slider {
@@ -242,7 +245,7 @@ canvas {
     align-items: center;
     justify-content: center;
     height: 100%;
-    color:white;
+    color:var(--white);
 }
 
 .header-section .play-btn {
