@@ -146,10 +146,7 @@ var countryCentroids;
 var countryData = createCountryJson(xflows, countryCoordinates);
 var centroidLabels;
 
-// d3.json('data/centroid.geojson')
-//     .then(data => {
-//     console.log(data);
-
+// load centroids
 function loadCircleMarker(data) {    
     // remove any paths
     svg.select("g").remove();
