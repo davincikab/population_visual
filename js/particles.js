@@ -164,9 +164,6 @@ function loadCircleMarker(data) {
         .style('pointer-events', "all")
         .style('cursor', 'pointer')
         .style('fill', function(d) {
-            // if (parseInt(d.properties.net) < 1000) { 
-            //     return "rgba(180,20,20,1)";
-            // }
 
             return "rgba(20,20,180,1)";
         })
@@ -214,7 +211,7 @@ loadCircleMarker(countryData);
 function createParticleSystem(startarr) {
     
     if (particleSystem) {
-        maxage = 500 * 1.5;
+        maxage = 500;
         container.removeChild(renderer.domElement);
 
         renderer = new THREE.WebGLRenderer();
@@ -285,8 +282,6 @@ function createParticleSystem(startarr) {
                 particles.vertices.push(particle);
             }
 
-            
-		    
         }
     }
 
@@ -542,7 +537,7 @@ function showPopover(e) {
     if(clicked == "0" || d.properties.country == clickedCentroid) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
-        "<div class='description' >Total Migration Outflows: " + d3.format(",.2r")(d.properties.net) + "</div>"
+        "<div class='description' >"+ filterObject.activeYear+" Migration: " + d3.format(",.2r")(d.properties.net) + "</div>"
         "</div>";
 
         popup
@@ -552,7 +547,7 @@ function showPopover(e) {
     } else if (tempflows[d.properties.country]) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + clicked +" to "+ d.properties.country +"</strong></div>" +
-        "<div class='description' >Total Migration Outflows: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
+        "<div class='description' >"+ filterObject.activeYear +" Migration: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
         "</div>";
 
         popup
@@ -756,13 +751,6 @@ function getEndArray(data) {
 function getCountArrar(data) {
     let arr = [];
 
-    // let countries = Object.keys(data);
-    // countries.forEach(country => {
-    //     let entry = data[country];
-
-    //     arr.push(entry[country]);
-    // });
-
     Object.values(data).forEach(entry => {
         // count
         for(let key in entry) {
@@ -771,12 +759,6 @@ function getCountArrar(data) {
             arr.push(value);
         }
     });
-
-    // console.log(arr);
-    // let sorted = [...arr].sort((a, b) => a - b);
-
-    // let max = sorted[sorted.length - 1];
-    // let min = sorted[0];
 
     arr = arr.map(value => {
         return normalizeValue(value);

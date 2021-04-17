@@ -11,7 +11,7 @@ map.addControl(
     new mapboxgl.NavigationControl({
         showCompass:false
     }), 
-    'top-right'
+    'top-left'
 );
 
 var blueColorScheme = ['#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c']
@@ -87,7 +87,7 @@ class RefreshControl {
     }
 }
 
-map.addControl(new RefreshControl(), 'top-right');
+map.addControl(new RefreshControl(), 'top-left');
 
 
 
@@ -176,7 +176,7 @@ class FullScreenControl {
     }
 }
 
-// map.addControl(new FullScreenControl(), 'top-right');
+// map.addControl(new FullScreenControl(), 'top-left');
 function resetMapView() {
     map.setCenter([0,0]);
     map.setZoom(1);
