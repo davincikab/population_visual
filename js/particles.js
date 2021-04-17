@@ -11,6 +11,13 @@ var popup;
 var activeYear = 1995;
 var requestAnim;
 
+// colors used on the centroids
+var centroidColors  = {
+    originColor:"yellow",
+    destinationColor:"green",
+    defaultColor:"blue",
+};
+
 var particleSystem;
 var xflows = orign_destionation[filterObject.activeYear];
 xflows = getYearFlows(xflows);
@@ -491,10 +498,10 @@ function click(dd, notransition) {
             })
             .style("fill", function (d) {
                 if (d.properties.country !== dd.properties.country) {
-                    return "green";
+                    return centroidColors.destinationColor;
                 } else {
                     console.log(d);
-                    return "yellow";
+                    return centroidColors.originColor;
                 }
             })
             .attr("d", function(d){
@@ -604,7 +611,7 @@ function mouseout () {
             })
             .style("fill", function (d) {
                 // if (d.properties.net < 1000) { return "rgb(180,20,20)";}
-                return "rgb(20,20,180)";
+                return centroidColors.defaultColor;
             })
             .style("opacity", function (d) {
                 return ((Math.min(d.properties.abs, 1000) / 1000) * 0.6 + 0.3);

@@ -9,10 +9,6 @@ var filterObject = {
   region:"Africa"
 };
 
-var sliderColors  = {
-
-};
-
 var sliderYear = {
   1990:{index:0},
   1995:{index:1},
