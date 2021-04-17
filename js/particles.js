@@ -207,7 +207,7 @@ loadCircleMarker(countryData);
 function createParticleSystem(startarr) {
     
     if (particleSystem) {
-        maxage = 500;
+        maxage = 500 * 1.5;
         container.removeChild(renderer.domElement);
 
         renderer = new THREE.WebGLRenderer();

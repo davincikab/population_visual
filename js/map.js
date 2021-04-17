@@ -14,6 +14,8 @@ map.addControl(
     'top-right'
 );
 
+var blueColorScheme = ['#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c']
+var greenColorScheme = ['#ccece6','#99d8c9','#66c2a4','#2ca25f','#2ca25f'];
 
 map.on("load", function(e) {
     map.addSource('countries',{
@@ -31,19 +33,26 @@ map.on("load", function(e) {
                 ['linear'],
                 ['get', 'value'],
                 10,
-                '#ccece6',
+                blueColorScheme[0],
                 20,
-                '#99d8c9',
+                blueColorScheme[1],
                 30,
-                '#66c2a4',
+                blueColorScheme[2],
                 40,
-                '#2ca25f',
+                blueColorScheme[3],
                 50,
-                '#2ca25f'  
+                blueColorScheme[4]  
             ],
             'fill-opacity':0.7
         }
     });
+
+    // update zoom in/out the icons
+    let zoomInBtn = document.querySelector(".mapboxgl-ctrl button.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon");
+    zoomInBtn.innerHTML = "<i class='fa fa-plus'></i>";
+
+    let zoomOutBtn = document.querySelector(".mapboxgl-ctrl button.mapboxgl-ctrl-zoom-out .mapboxgl-ctrl-icon");
+    zoomOutBtn.innerHTML = "<i class='fa fa-minus'></i>";
 
 
     map.on("click", function(e) {
@@ -167,7 +176,7 @@ class FullScreenControl {
     }
 }
 
-map.addControl(new FullScreenControl(), 'top-right');
+// map.addControl(new FullScreenControl(), 'top-right');
 function resetMapView() {
     map.setCenter([0,0]);
     map.setZoom(1);

@@ -36,7 +36,8 @@ canvas {
 }
 
 .reset-view {
-    background-color: white;
+    background-color: #000;
+    color:white;
     padding: 0.4em 0.8em;
     border-radius: 4px;
     cursor: pointer;
@@ -52,6 +53,27 @@ canvas {
     height:100vh;
     /* width: 1200px; */
     /* background-color: black; */
+}
+
+.mapboxgl-ctrl-group {
+    border-radius: 4px;
+    background: #000 !important;
+}
+
+.mapboxgl-ctrl button.mapboxgl-ctrl-zoom-in .mapboxgl-ctrl-icon {
+    background-image: none !important;
+    color:white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mapboxgl-ctrl button.mapboxgl-ctrl-zoom-out .mapboxgl-ctrl-icon {
+    background-image: none !important;
+    color:white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .mapboxgl-interactive {
@@ -99,7 +121,7 @@ canvas {
     padding:0.5rem 0.25rem;
     background-color: transparent;
     z-index: 2;
-    box-shadow: 2px 2px 0.3em rgb(88, 88, 88);
+    /* box-shadow: 2px 2px 0.3em rgb(88, 88, 88); */
 }
 
 .filter-panel select {
@@ -128,15 +150,15 @@ canvas {
 
 .popup-events{ 
     /* width:20%; */
-    max-height: 40vh;
+    max-height: 60vh;
     overflow-y:auto;
 }
 
 .popup-event {
     color:white;
-    background-color: transparent;
-    box-shadow: 2px 2px 0.3em #aaa;
     margin-bottom: 0.5em;
+    background-color: rgba(255, 255, 255, 0.46);
+    padding:0.2em 0.1em;
 }
 
 .popup-event .title {
@@ -183,8 +205,9 @@ canvas {
     background-color: rgba(255, 255, 255, 0.46);
     display: flex;
     justify-content: flex-start;
+    align-items: center;
     z-index: 2;
-    padding: 0.375rem 0.5rem;
+    padding: 0rem 0.5rem;
 }
 
 .axis text,
@@ -197,7 +220,7 @@ canvas {
 }
 
 .slider text {
-    fill: green;
+    fill: blue;
 }
 
 .animate-slider {
@@ -225,6 +248,7 @@ canvas {
 .header-section .play-btn {
     cursor: pointer;
     margin-top:0.3em;
+    font-size: 1rem;
 }
 
 .header-section p {
