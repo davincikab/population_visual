@@ -34,11 +34,12 @@ var sliderTime = d3
   .min(d3.min(dataTime))
   .max(d3.max(dataTime))
   // .step(1000 * 60 * 60 * 24 * 365 * 1)
-  .width(700)
+  .width(1000)
   .tickFormat(d3.timeFormat('%Y'))
   .tickValues(dataTime)
+  .tickPadding(1)
   .default(new Date(1990, 1, 1))
-  .fill("red")
+  .fill("blue")
   .on("end", val => {
     console.log("End Event");
 
@@ -95,7 +96,7 @@ var sliderTime = d3
 var gTime = d3
     .select('div#slider-time')
     .append('svg')
-    .attr('width', "80vw")
+    .attr('width', "85vw")
     .attr('height', 70)
     .append('g')
     .attr('transform', 'translate(30,30)');
@@ -728,3 +729,9 @@ function playOrPause() {
   }
 
 }
+
+window.addEventListener("resize", function(e) {
+  console.log("Resizing");
+
+  filterActiveLayerByYear(filterObject.activeYear);
+});
