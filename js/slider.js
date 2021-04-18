@@ -692,9 +692,9 @@ function animateSlider() {
     index++;
 
     if(index >= 30) {
-      // cancelIntervalAnimation();    
+      // cancelIntervalAnimation();  
+      window.location.reload();  
       index = 0;
-
       sliderValue.value(new Date(1990, 1, 1));
     }
     

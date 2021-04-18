@@ -31,6 +31,8 @@ var xspeedarr = getSpeedArray(xtofromarr);
 var cntarr = getCountArrar(xflows);
 
 var maxage = 500;
+var isUpdated = false;
+var counter = 1;
 
 var VIEW_ANGLE = 90,
     ASPECT = WIDTH / HEIGHT,
@@ -206,9 +208,17 @@ loadCircleMarker(countryData);
 
 // 
 function createParticleSystem(startarr) {
-    
+    // age: 277
+    // agestart: 0
+
+    // age: 328
+    // agestart: 0
     if (particleSystem) {
+        isUpdated = true;
+        particles.vertices = []; 
+
         maxage = 500;
+        // counter = 0.9;
         container.removeChild(renderer.domElement);
 
         renderer = new THREE.WebGLRenderer();
@@ -233,7 +243,7 @@ function createParticleSystem(startarr) {
             transparent: true
         });
 
-        particles.vertices = [];
+        
        
         scene.removeChild(particleSystem);
         renderer.render(scene, camera);
@@ -312,12 +322,13 @@ function update() {
         // console.log(pCount);
 
         if(!particle) {
-            continue;
+            continue; 
         }
 
         if(particle.age >= maxage) {
             particle.age = 0;
 
+            // console.log("Resetting");
             particle.position.x = particle.startpt[0] + xtrans;
             particle.position.y = particle.startpt[1] + ytrans;
 
@@ -335,7 +346,7 @@ function update() {
                 particle.age = particle.agestart;
             }
 
-            particle.age++;
+            particle.age += counter;
         } 
         else if(filterObject.origin != "all" && filterObject.destination != "all") {
             if (particle.from == filterObject.origin && particle.to == filterObject.destination) {
@@ -350,7 +361,7 @@ function update() {
                         particle.velocity);
 
 
-                particle.age++;
+                particle.age += counter;
             }
             else { 
             // if (particle.from !== selected && particle.to !== filterObject.destination) {
@@ -374,7 +385,7 @@ function update() {
                         particle.velocity);
 
 
-                particle.age++;
+                particle.age += counter;
 
             } 
             else {

@@ -60,6 +60,8 @@ map.on("load", function(e) {
     })
 
     animateSlider();
+
+    // FullScreenControl.renderFullScreen();
 });
 
 
