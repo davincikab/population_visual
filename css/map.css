@@ -204,7 +204,7 @@ canvas {
 /* slider container */
 .slider-panel {
     position: absolute;
-    bottom: 2%;
+    bottom: 1%;
     left: 5%;
     width: auto;
     height: 100px;
