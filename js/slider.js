@@ -29,12 +29,15 @@ var dataTime = d3.range(0, 35, 5).map(function(d) {
   return new Date(1990 + d, 1, 1);
 });
 
+var sliderWidth = document.body.clientWidth * 0.8;
+console.log("Silder: " + sliderWidth);
+
 var sliderTime = d3
   .sliderBottom()
   .min(d3.min(dataTime))
   .max(d3.max(dataTime))
   // .step(1000 * 60 * 60 * 24 * 365 * 1)
-  .width(1000)
+  .width(sliderWidth)
   .tickFormat(d3.timeFormat('%Y'))
   .tickValues(dataTime)
   .tickPadding(1)

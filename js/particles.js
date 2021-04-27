@@ -16,6 +16,7 @@ var centroidColors  = {
     originColor:"yellow",
     destinationColor:"green",
     defaultColor:"blue",
+    orange:"#ffa500"
 };
 
 var particleSystem;
@@ -163,7 +164,7 @@ function loadCircleMarker(data) {
         .style('pointer-events', "all")
         .style('cursor', 'pointer')
         .style('fill', function(d) {
-
+            if (d.properties.net < 0) { return centroidColors.orange;}
             return "rgba(20,20,180,1)";
         })
         .attr('d', pathpt)
@@ -501,8 +502,10 @@ function click(dd, notransition) {
             })
             .style("fill", function (d) {
                 if (d.properties.country !== dd.properties.country) {
-                    return centroidColors.destinationColor;
+                    if (tempflows[d.properties.country] > 0) { return centroidColors.defaultColor;}
+                    return centroidColors.orange;
                 } else {
+                    // if (tempflows[d.properties.country] < 0) { return centroidColors.orange;}
                     console.log(d);
                     return centroidColors.originColor;
                 }
@@ -545,7 +548,7 @@ function showPopover(e) {
     if(clicked == "0" || d.properties.country == clickedCentroid) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + d.properties.country + "</strong></div>" +
-        "<div class='description' >"+ filterObject.activeYear+" Migration: " + d3.format(",.2r")(d.properties.net) + "</div>"
+        "<div class='description' >"+ filterObject.activeYear+" Net Migration: " + d3.format(",.2r")(d.properties.net) + "</div>"
         "</div>";
 
         popup
@@ -555,7 +558,7 @@ function showPopover(e) {
     } else if (tempflows[d.properties.country]) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + clicked +" to "+ d.properties.country +"</strong></div>" +
-        "<div class='description' >"+ filterObject.activeYear +" Migration: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
+        "<div class='description' >"+ filterObject.activeYear +" Net Migration: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
         "</div>";
 
         popup
@@ -613,7 +616,7 @@ function mouseout () {
                 return pathpt(d);
             })
             .style("fill", function (d) {
-                // if (d.properties.net < 1000) { return "rgb(180,20,20)";}
+                if (d.properties.net < 0) { return centroidColors.orange;}
                 return centroidColors.defaultColor;
             })
             .style("opacity", function (d) {
@@ -791,7 +794,7 @@ function getSpeedArray(tofromArrData) {
 
 function normalizeValue(value) {
     value = value / 5000;
-    return value <= 1 ? 1 : Math.round(value);
+    return value < 1 ? 0 : Math.round(value);
 }
 
 
@@ -799,19 +802,12 @@ function createCountryJson(xflows, countryCoordinates) {
     let json = [];
 
     countryCoordinates.forEach(entry => {
-        let flows = xflows[entry.country]
+        let country = net_migration.find(migration => migration.country == entry.country);
 
-        if(flows) {
+        // get the country for the active year
+        if(country) {
             // console.log(flows);
-            let net = 0;
-            let values = flows[entry.country];
-            net = values;
-            
-            // console.log(values);
-
-            if(values[0]) {
-                net = values.reduce((a,b) => a + b);
-            }
+            let net = country[filterObject.activeYear];
             
             // create a feature
             json.push({
