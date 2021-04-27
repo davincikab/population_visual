@@ -794,7 +794,7 @@ function getSpeedArray(tofromArrData) {
 
 function normalizeValue(value) {
     value = value / 5000;
-    return value <= 1 ? 1 : Math.round(value);
+    return value < 1 ? 0 : Math.round(value);
 }
 
 
