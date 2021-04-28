@@ -152,7 +152,11 @@ function filterActiveLayerByYear(year) {
   cnttotal = getCountTotal(cntarr);
 
   createParticleSystem(startarr);
-  requestAnimationFrame(update);
+
+  // setTimeout(function() {
+
+  // }, 1000);
+  
 }
 
 // search Origin and destionation

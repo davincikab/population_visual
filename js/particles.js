@@ -313,8 +313,8 @@ function createParticleSystem(startarr) {
             p.agestart = p.age;
         });
 
-        console.log(maxAgeObject[filterObject.activeYear].toString());
-        console.log(particles.vertices.map(p => p.age).toString());
+        // console.log(maxAgeObject[filterObject.activeYear].toString());
+        // console.log(particles.vertices.map(p => p.age).toString());
     }
     
 
