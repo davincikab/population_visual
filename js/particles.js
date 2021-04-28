@@ -335,7 +335,7 @@ function update() {
 
         }
 
-        if (selected == "0") {
+        if (selected == "0" && filterObject.destination == "all") {
             // and the position
             particle.position.addSelf(
                     particle.velocity);
@@ -395,8 +395,32 @@ function update() {
                 particle.position.y = 380;
     
             }
-        }   
-        else if (selected == "-2") {
+        } else if(filterObject.destination != "all" && filterObject.origin == "all") {
+            // console.log("Filtering");
+
+            if (particle.to == filterObject.destination) {
+
+                // console.log("selected");
+                if (particle.position.x > 600) {
+                    particle.position.x = particle.xstart + xtrans;
+                    particle.position.y = particle.ystart + ytrans;
+                    particle.age = particle.agestart;
+                }
+
+                particle.position.addSelf(
+                        particle.velocity);
+
+
+                particle.age += counter;
+
+            } 
+            else {
+            // if (particle.from !== selected && particle.to !== selected) {
+                particle.position.x = 700;
+                particle.position.y = 380;
+    
+            }
+        } else if (selected == "-2") {
             particle.position.x = particle.xstart + xtrans;
             particle.position.y = particle.ystart + ytrans;
             particle.age = particle.agestart;
@@ -475,6 +499,9 @@ function click(dd, notransition) {
 
     filterObject.origin = selected;
 
+    // update the form values
+    document.getElementById("from").value = clicked;
+
     console.log("click");
     console.log(dd);
 
@@ -544,6 +571,18 @@ function showPopover(e) {
     popup = new mapboxgl.Popup({ focusAfterOpen:false })
             .setLngLat(d.geometry.coordinates)
 
+    if (filterObject.destination != "all" && filterObject.origin == "all") {
+        var popupContent = "<div class='popup-content'>" + 
+        "<div class='popup-title'><strong>" + d.properties.country +" to "+ filterObject.destination +"</strong></div>" +
+        "<div class='description' >"+ filterObject.activeYear +" Net Migration: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"
+        "</div>";
+
+        popup
+            .setHTML(popupContent)
+            .addTo(map);
+        
+        return;
+    }
 
     if(clicked == "0" || d.properties.country == clickedCentroid) {
         var popupContent = "<div class='popup-content'>" + 
@@ -555,7 +594,8 @@ function showPopover(e) {
             .setHTML(popupContent)
             .addTo(map);
 
-    } else if (tempflows[d.properties.country]) {
+    }  
+    else if (tempflows[d.properties.country]) {
         var popupContent = "<div class='popup-content'>" + 
         "<div class='popup-title'><strong>" + clicked +" to "+ d.properties.country +"</strong></div>" +
         "<div class='description' >"+ filterObject.activeYear +" Net Migration: " + d3.format(",.2r")(tempflows[d.properties.country]) + "</div>"

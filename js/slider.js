@@ -239,10 +239,36 @@ function migrationByOrgnAndDest() {
   } else {
     // get th destination feature
     destinationFeature = countryData.find(cntry => cntry.properties.country == destination);
-    let activeCountries = [destinationFeature, originFeature];
+    let activeCountries = originFeature ? [destinationFeature, originFeature] : [destinationFeature];
 
-    // recreate country data
-    loadCircleMarker(activeCountries);
+    if(origin == "all" && destination != "all") {
+      activeCountries = [];
+      tempflows = {};
+      for (const key in xflows) {
+        if (xflows.hasOwnProperty(key)) {
+          const flows = xflows[key];
+          
+          let destCountries = Object.keys(flows);
+          if(destCountries.indexOf(destination) != -1) {
+            activeCountries.push(key);
+
+            // create a tempflow values
+            console.log(key);
+            tempflows[key] = flows[destination];
+          }
+        }
+      }
+
+      activeCountries.push(destination);
+      let destinationCountry = countryData.filter(country => activeCountries.indexOf(country.properties.country) != -1);
+      loadCircleMarker(destinationCountry);
+
+    } else {
+      // recreate country data
+      loadCircleMarker(activeCountries);
+    }
+    
+    
   }
 
   // update the cities
@@ -252,6 +278,11 @@ function migrationByOrgnAndDest() {
   // tempflows = xflows[origin];
 
   // change the colors
+  if(origin == "all" && destination == "all") {
+    mouseout();
+    return;
+  }
+
   countryCentroids
     .style("fill", function(d){
       if (d.properties.country == origin) { return 'yellow'; }
@@ -284,6 +315,20 @@ function migrationByOrgnAndDest() {
       updatecities();
 
       click(originFeature);
+    } else {
+      updatecities();
+
+      countryCentroids
+      .style("fill", function (d) {
+        if (d.properties.country !== destination) {
+            if (d.properties.net > 0) { return centroidColors.defaultColor;}
+            return centroidColors.orange;
+        } else {
+            // if (tempflows[d.properties.country] < 0) { return centroidColors.orange;}
+            console.log(d);
+            return centroidColors.originColor;
+        }
+    })
     }
     
 

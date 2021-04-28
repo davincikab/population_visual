@@ -59,7 +59,7 @@ map.on("load", function(e) {
         
     })
 
-    animateSlider();
+    // animateSlider();
 
     // FullScreenControl.renderFullScreen();
 });

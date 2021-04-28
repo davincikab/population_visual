@@ -119,11 +119,12 @@ canvas {
 /* origin destination filer */
 .filter-panel {
     position: absolute;
-    top:2%;
-    right: 1%;
+    top: 0%;
+    right: 0%;
+    margin: 1px 10px 0px 0px;
     width: 20%;
     height: auto;
-    padding:0.5rem 0.25rem;
+    padding: 0.5rem 0.25rem;
     background-color: transparent;
     z-index: 2;
     /* box-shadow: 2px 2px 0.3em rgb(88, 88, 88); */
